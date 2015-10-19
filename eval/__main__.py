@@ -347,6 +347,7 @@ def _analyze(scores, output_dir, name, class_names):
 
 def run_experiment(conf, thesaurus=None):
     start_time = datetime.now()
+    mkdirs_if_not_exists(conf['output_dir'])
 
     if thesaurus:
         fit_args = {'vector_source': thesaurus}

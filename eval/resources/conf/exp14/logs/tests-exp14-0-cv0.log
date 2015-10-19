@@ -1,0 +1,328 @@
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	bov._count_vocab (line 355)	ERROR : Empty vocabulary
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils.jsonify_single_labelled_corpus (line 270)	INFO : Writing thesisgenerator/resources/test-tr to gzip json
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 234)	INFO : Compressed JSON tokenizer running for thesisgenerator/resources/test-tr.gz
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_tr-fold0.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_ev-fold0.csv
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	test_feature_selectors._do_feature_selection (line 46)	INFO : Loading thesaurus thesisgenerator/resources/thesauri/exp0-0a.txt.events-unfiltered.strings from disk
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 5/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_tr-fold0.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 5/5 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_ev-fold0.csv
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_tr-fold0.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/3 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_ev-fold0.csv
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	test_feature_selectors._do_feature_selection (line 46)	INFO : Loading thesaurus thesisgenerator/resources/thesauri/exp0-0a.txt.events-unfiltered.strings from disk
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 2/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_tr-fold0.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 2/2 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_ev-fold0.csv
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 10/10 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_tr-fold0.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 10/10 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_ev-fold0.csv
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 5/10 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_tr-fold0.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 5/5 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_ev-fold0.csv
+23.04.2015 12:26:46	test_feature_selectors.test_bigram_features_with_composer_without_fs (line 264)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 10/10 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_tr-fold0.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 10/10 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_fs-test_ev-fold0.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_main._reload_thesaurus_and_tokenizer (line 140)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0b.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	__main__._build_feature_selector (line 152)	INFO : Scoring function is sklearn.feature_selection.chi2
+23.04.2015 12:26:46	__main__._build_feature_selector (line 164)	INFO : FS method is <class 'thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest'>
+23.04.2015 12:26:46	__main__._build_pipeline (line 186)	INFO : Will perform post-vectorizer data dump
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	stats._flush_data_to_csv (line 36)	INFO : Flushing 0 statistics for fold 12345 to statistics/stats-test_main.tc.csv.gz
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_tr-fold12345.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/3 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_ev-fold12345.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_main._reload_thesaurus_and_tokenizer (line 140)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0b.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	__main__._build_feature_selector (line 152)	INFO : Scoring function is sklearn.feature_selection.chi2
+23.04.2015 12:26:46	__main__._build_feature_selector (line 164)	INFO : FS method is <class 'thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest'>
+23.04.2015 12:26:46	__main__._build_pipeline (line 186)	INFO : Will perform post-vectorizer data dump
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	stats._flush_data_to_csv (line 36)	INFO : Flushing 0 statistics for fold 12345 to statistics/stats-test_main.tc.csv.gz
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_tr-fold12345.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/3 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_ev-fold12345.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_main._reload_thesaurus_and_tokenizer (line 140)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0b.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	__main__._build_feature_selector (line 152)	INFO : Scoring function is sklearn.feature_selection.chi2
+23.04.2015 12:26:46	__main__._build_feature_selector (line 164)	INFO : FS method is <class 'thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest'>
+23.04.2015 12:26:46	__main__._build_pipeline (line 186)	INFO : Will perform post-vectorizer data dump
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	stats._flush_data_to_csv (line 36)	INFO : Flushing 0 statistics for fold 12345 to statistics/stats-test_main.tc.csv.gz
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_tr-fold12345.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 3/3 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_ev-fold12345.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_main._reload_thesaurus_and_tokenizer (line 140)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0b.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	__main__._build_feature_selector (line 152)	INFO : Scoring function is sklearn.feature_selection.chi2
+23.04.2015 12:26:46	__main__._build_feature_selector (line 164)	INFO : FS method is <class 'thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest'>
+23.04.2015 12:26:46	__main__._build_pipeline (line 186)	INFO : Will perform post-vectorizer data dump
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	stats._flush_data_to_csv (line 36)	INFO : Flushing 0 statistics for fold 12345 to statistics/stats-test_main.tc.csv.gz
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_tr-fold12345.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_ev-fold12345.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_main._reload_thesaurus_and_tokenizer (line 140)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0b.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	__main__._build_feature_selector (line 152)	INFO : Scoring function is sklearn.feature_selection.chi2
+23.04.2015 12:26:46	__main__._build_feature_selector (line 164)	INFO : FS method is <class 'thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest'>
+23.04.2015 12:26:46	__main__._build_pipeline (line 186)	INFO : Will perform post-vectorizer data dump
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	stats._flush_data_to_csv (line 36)	INFO : Flushing 0 statistics for fold 12345 to statistics/stats-test_main.tc.csv.gz
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_tr-fold12345.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_ev-fold12345.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_main._reload_thesaurus_and_tokenizer (line 140)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0b.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	__main__._build_feature_selector (line 152)	INFO : Scoring function is sklearn.feature_selection.chi2
+23.04.2015 12:26:46	__main__._build_feature_selector (line 164)	INFO : FS method is <class 'thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest'>
+23.04.2015 12:26:46	__main__._build_pipeline (line 186)	INFO : Will perform post-vectorizer data dump
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	stats._flush_data_to_csv (line 36)	INFO : Flushing 0 statistics for fold 12345 to statistics/stats-test_main.tc.csv.gz
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_tr-fold12345.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_ev-fold12345.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_main._reload_thesaurus_and_tokenizer (line 140)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	__main__._build_feature_selector (line 152)	INFO : Scoring function is sklearn.feature_selection.chi2
+23.04.2015 12:26:46	__main__._build_feature_selector (line 164)	INFO : FS method is <class 'thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest'>
+23.04.2015 12:26:46	__main__._build_pipeline (line 186)	INFO : Will perform post-vectorizer data dump
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-baseline-ev
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	stats._flush_data_to_csv (line 36)	INFO : Flushing 0 statistics for fold 12345 to statistics/stats-test_main.tc.csv.gz
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_tr-fold12345.csv
+23.04.2015 12:26:46	bov._count_vocab (line 300)	INFO : Converting features to vectors (with thesaurus lookup)
+23.04.2015 12:26:46	bov._count_vocab (line 304)	INFO : Using TF-IDF: False, transformer is NoopTransformer()
+23.04.2015 12:26:46	feature_selectors._get_support_mask (line 107)	INFO : 6/6 features survived feature selection
+23.04.2015 12:26:46	dumpers._dump (line 56)	INFO : Saved debug info to ./PostVectDump_test_main_ev-fold12345.csv
+23.04.2015 12:26:46	test_main.setUp (line 27)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	test_stats_recorder.stats_files (line 26)	INFO : Loading thesaurus thesisgenerator/resources/exp0-0a.strings from disk
+23.04.2015 12:26:46	experimental_utils.run_experiment (line 48)	INFO : RUNNING EXPERIMENT 1
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	data_utils.load_text_data_into_memory (line 46)	INFO : Loading raw test set thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 106)	INFO : Using a file content generator with source thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	data_utils._get_data_iterators (line 112)	INFO : Targets are: ['earn', 'not-earn']
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-tr
+23.04.2015 12:26:46	tokenizers.tokenize_corpus (line 91)	INFO : XmlTokenizer running for thesisgenerator/resources/test-ev
+23.04.2015 12:26:46	__main__.go (line 419)	INFO : Reading configuration file from thesisgenerator/resources/conf/exp1/exp1_base-variants/exp1-0.conf, conf spec from thesisgenerator/resources/conf/exp1/exp1_base-variants/../../../../../conf/confrc
+23.04.2015 12:26:46	__main__._build_crossvalidation_iterator (line 60)	INFO : Building crossvalidation iterator
+23.04.2015 12:26:46	__main__._build_crossvalidation_iterator (line 66)	WARNING : You have requested test set to be used for evaluation.
+23.04.2015 12:26:46	classifiers.__init__ (line 202)	INFO : Will do 2 runs, for each sampling 3 documents from a training set of size 3
+23.04.2015 12:26:46	classifiers.__iter__ (line 216)	INFO : Will train on collection of len 3 - [0, 1, 2]
+23.04.2015 12:26:46	classifiers.__iter__ (line 216)	INFO : Will train on collection of len 3 - [0, 1, 2]
+23.04.2015 12:26:46	__main__._cv_loop (line 221)	INFO : Starting CV fold 0

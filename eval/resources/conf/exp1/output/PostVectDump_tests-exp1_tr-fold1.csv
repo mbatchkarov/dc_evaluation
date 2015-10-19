@@ -1,0 +1,4 @@
+id,target,total_feat_weight,nonzero_feats,cat/N,dog/N,game/N,kid/N,like/V,play/V
+0,earn,3.0,3,1.00,1.00,0.00,0.00,1.00,0.00
+1,earn,3.0,3,1.00,1.00,0.00,0.00,1.00,0.00
+2,not-earn,3.0,3,0.00,0.00,1.00,1.00,0.00,1.00

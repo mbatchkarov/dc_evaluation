@@ -1,0 +1,13 @@
+classifier,metric,score_mean,score_std
+BernoulliNB,f1_score-earn,1.0,0.0
+BernoulliNB,f1_score-not-earn,1.0,0.0
+BernoulliNB,precision_score-earn,1.0,0.0
+BernoulliNB,precision_score-not-earn,1.0,0.0
+BernoulliNB,recall_score-earn,1.0,0.0
+BernoulliNB,recall_score-not-earn,1.0,0.0
+MultinomialNB,f1_score-earn,0.8,0.0
+MultinomialNB,f1_score-not-earn,0.0,0.0
+MultinomialNB,precision_score-earn,0.6666666666666666,0.0
+MultinomialNB,precision_score-not-earn,0.0,0.0
+MultinomialNB,recall_score-earn,1.0,0.0
+MultinomialNB,recall_score-not-earn,0.0,0.0

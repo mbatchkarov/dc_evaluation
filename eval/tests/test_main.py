@@ -10,8 +10,9 @@ from discoutils.thesaurus_loader import Thesaurus
 from eval.composers.vectorstore import DummyThesaurus
 
 from eval import __main__
+from eval.scripts.compress_labelled_data import jsonify_single_labelled_corpus
 from eval.tests.test_feature_selectors import strip
-from eval.utils.data_utils import get_tokenized_data, jsonify_single_labelled_corpus
+from eval.utils.data_utils import get_tokenized_data
 
 tokenizer_opts = {
     'normalise_entities': False,

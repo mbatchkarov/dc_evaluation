@@ -7,7 +7,8 @@ from glob import glob
 import six
 from discoutils.thesaurus_loader import Thesaurus
 from discoutils.tokens import DocumentFeature
-from eval.plugins.experimental_utils import run_experiment
+from eval.__main__ import run_experiment
+from eval.utils.conf_file_utils import parse_config_file
 
 """
 Run a full experiment with a simple dataset like
@@ -23,11 +24,11 @@ def _get_counter_ignoring_negatives(df, column_list):
 
 @pytest.fixture(scope="module")
 def stats_files(request):
-    prefix = 'eval/resources'
     # load a mock unigram thesaurus, bypassing the similarity calculation provided by CompositeVectorSource
     vector_source = Thesaurus.from_tsv('eval/resources/exp0-0a.strings')
     # exp1 is like exp0, but using Signified encoding
-    run_experiment(1, prefix=prefix, thesaurus=vector_source)
+    conf, _ = parse_config_file('eval/resources/conf/exp1/exp1.conf')
+    run_experiment(conf, thesaurus=vector_source)
 
     # setup goes like this:
     # for each sample size K (here set to [3])

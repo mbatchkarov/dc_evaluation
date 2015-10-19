@@ -1,4 +1,5 @@
 import sys
+
 from eval.__main__ import _is_valid_file
 
 sys.path.append('.')
@@ -13,7 +14,8 @@ import logging
 from eval.utils.data_utils import get_all_corpora, get_tokenizer_settings_from_conf_file, get_tokenized_data
 
 
-def jsonify_single_labelled_corpus(corpus_path, conf_file,
+def jsonify_single_labelled_corpus(corpus_path, conf_file=None,
+                                   tokenizer_conf=None,
                                    unigram_features=set('JNV'),
                                    phrase_features=set(['AN', 'NN', 'VO', 'SVO'])):
     """
@@ -42,7 +44,12 @@ def jsonify_single_labelled_corpus(corpus_path, conf_file,
             outfile.write(bytes('\n', 'UTF8'))
 
     # load the dataset from XML/JSON/CoNLL
-    conf = get_tokenizer_settings_from_conf_file(conf_file)
+    if conf_file:
+        conf = get_tokenizer_settings_from_conf_file(conf_file)
+    elif tokenizer_conf:
+        conf = tokenizer_conf
+    else:
+        raise ValueError('Must provide a dict or a file containing tokenizer config')
     x_tr, y_tr, x_test, y_test = get_tokenized_data(corpus_path, conf)
 
     with gzip.open('%s.gz' % corpus_path, 'wb') as outfile:

@@ -1,12 +1,15 @@
+from glob import glob
 import logging
 import os
 import random
+
 from discoutils.thesaurus_loader import Vectors
-from discoutils.misc import is_gzipped
+from discoutils.misc import is_gzipped, _check_file_magic
 import numpy as np
 import pandas as pd
 from sklearn.datasets import load_files
-from eval.plugins.tokenizers import GzippedJsonTokenizer, ConllTokenizer
+
+from eval.plugins.tokenizers import GzippedJsonTokenizer, ConllTokenizer, XmlTokenizer
 from eval.utils.conf_file_utils import parse_config_file
 from eval.composers.vectorstore import RandomThesaurus
 from eval.plugins.multivectors import MultiVectors
@@ -71,13 +74,23 @@ def get_tokenized_data(training_path, tokenizer_conf, shuffle_targets=False,
             x_test, y_test = None, None
         return x_tr, np.array(y_tr), x_test, np.array(y_test) if y_test else y_test
     # todo maybe we want to keep the XML code. In that case check if the file is XML or CoNLL
-    else:
-        tokenizer = ConllTokenizer(**tokenizer_conf)
+
+    # m011303:sample-data mmb28$ file aclImdb-tagged/neg/train_neg_12490_1.txt.tagged
+    # aclImdb-tagged/neg/train_neg_12490_1.txt.tagged: XML  document text
+    elif _check_file_magic(training_path, b'directory'):
+        # need to find out if these are XML or CoNLL files
+        a_file = glob(os.path.join(training_path, '*', '*'))[0]
+        if _check_file_magic(a_file, b'XML'):
+            tokenizer = XmlTokenizer(**tokenizer_conf)
+        else:
+            # must be ConLL then
+            tokenizer = ConllTokenizer(**tokenizer_conf)
         raw_data, data_ids = load_text_data_into_memory(training_path=training_path,
                                                         test_path=test_data,
                                                         shuffle_targets=shuffle_targets)
         return tokenize_data(raw_data, tokenizer, data_ids)
-
+    else:
+        raise ValueError('Input is neither a gzipped file containing all data nor a directory')
 
 def _get_data_iterators(path, shuffle_targets=False):
     """

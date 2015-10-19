@@ -108,8 +108,6 @@ class BaseTokeniser(object):
         raise NotImplementedError
 
 
-# Deprecated. Do not use.
-# Original purpose was to parse the XML output by CoreNLP, but it now offers a CoNLL option
 class XmlTokenizer(BaseTokeniser):
     def tokenize_corpus(self, file_names, corpus_name):
         logging.info('%s running for %s', self.__class__.__name__, corpus_name)

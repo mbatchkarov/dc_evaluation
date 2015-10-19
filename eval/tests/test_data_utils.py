@@ -1,8 +1,12 @@
 import os
-from eval.utils.data_utils import (get_tokenized_data, jsonify_single_labelled_corpus,
-                                              get_tokenizer_settings_from_conf, get_pipeline_fit_args)
-from eval.utils.conf_file_utils import parse_config_file
+
 import numpy as np
+from eval.scripts.compress_labelled_data import jsonify_single_labelled_corpus
+
+from eval.utils.data_utils import (get_tokenized_data,
+                                   get_tokenizer_settings_from_conf,
+                                   get_pipeline_fit_args)
+from eval.utils.conf_file_utils import parse_config_file
 
 
 def test_jsonify_XML_corpus():
@@ -15,7 +19,7 @@ def test_jsonify_XML_corpus():
     # parse the XML directly
     x_tr, y_tr, _, _ = get_tokenized_data(train_set, tk)
 
-    jsonify_single_labelled_corpus(train_set)
+    jsonify_single_labelled_corpus(train_set, conf_file)
     x_tr1, y_tr1, _, _ = get_tokenized_data(json_train_set, tk)
 
     # because the process of converting to json merges the train and test set, if a test set exists,

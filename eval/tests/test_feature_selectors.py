@@ -1,5 +1,6 @@
 import os
-
+from discoutils.thesaurus_loader import Vectors
+import numpy as np
 from sklearn.pipeline import Pipeline
 import numpy.testing as t
 from pandas.io.parsers import read_csv

@@ -194,6 +194,7 @@ class ThesaurusVectorizer(TfidfVectorizer):
     def _remove_features_containing_named_entities(self, features):
         return [f for f in features if not any(token.ner in self.entity_ner_tags for token in f.tokens)]
 
+    # todo move feature extraction to a separate module for easy access- users will want to add more stuff
     def extract_features_from_dependency_tree(self, parse_tree):
         new_features = []
 

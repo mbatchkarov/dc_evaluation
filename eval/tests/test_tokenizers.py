@@ -1,8 +1,8 @@
 # coding=utf-8
 from operator import attrgetter
 from unittest import TestCase
-from eval.plugins.tokenizers import XmlTokenizer
-from discoutils.tokens import DocumentFeature, Token
+from eval.plugins.tokenizers import XmlTokenizer, is_number
+from discoutils.tokens import Token
 
 try:
     import xml.etree.cElementTree as ET
@@ -225,8 +225,6 @@ class Test_tokenizer(TestCase):
         return [sorted(tree.nodes(), key=attrgetter('index')) for tree in trees]
 
     def test_is_number(self):
-        is_number = self.tokenizer._is_number
-
         self.assertTrue(is_number('123'))
         self.assertTrue(is_number('123.1928'))
         self.assertTrue(is_number('123e3'))

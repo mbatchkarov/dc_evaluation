@@ -1,27 +1,14 @@
-from glob import glob
-from hashlib import md5
 import logging
 import os
 import random
-import sys
-
-sys.path.append('.')
-sys.path.append('..')
-sys.path.append('../..')
 from discoutils.thesaurus_loader import Vectors
-from discoutils.cmd_utils import run_and_log_output
 from discoutils.misc import is_gzipped
 import numpy as np
 import pandas as pd
-import json
-import gzip
-from joblib import Parallel, delayed
 from sklearn.datasets import load_files
-from eval.plugins.tokenizers import XmlTokenizer, GzippedJsonTokenizer
+from eval.plugins.tokenizers import GzippedJsonTokenizer, ConllTokenizer
 from eval.utils.conf_file_utils import parse_config_file
-from eval.utils.misc import force_symlink
 from eval.composers.vectorstore import RandomThesaurus
-from eval.plugins.bov import ThesaurusVectorizer
 from eval.plugins.multivectors import MultiVectors
 
 
@@ -83,8 +70,9 @@ def get_tokenized_data(training_path, tokenizer_conf, shuffle_targets=False,
         else:
             x_test, y_test = None, None
         return x_tr, np.array(y_tr), x_test, np.array(y_test) if y_test else y_test
+    # todo maybe we want to keep the XML code. In that case check if the file is XML or CoNLL
     else:
-        tokenizer = XmlTokenizer(**tokenizer_conf)
+        tokenizer = ConllTokenizer(**tokenizer_conf)
         raw_data, data_ids = load_text_data_into_memory(training_path=training_path,
                                                         test_path=test_data,
                                                         shuffle_targets=shuffle_targets)
@@ -175,110 +163,9 @@ def get_thesaurus_entries(tsv_file):
     return set(Vectors.from_tsv(tsv_file).keys())
 
 
-def load_and_shelve_thesaurus(path, **kwargs):
-    """
-    Parses and then shelves a thesaurus file. Reading from it is much faster and memory efficient than
-    keeping it in memory. Returns a callable that returns the thesaurus
-    :rtype: Delayed
-    """
-    from discoutils.misc import Delayed
-
-    # built-in hash has randomisation enabled by default on py>=3.3
-    filename = 'shelf_%s' % md5(path.encode('utf8')).hexdigest()
-    # shelve may add an extension or split the file in bits with different extensions
-    search_paths = glob('%s*' % filename)
-    if search_paths:  # there are files that match that name
-        logging.info('Returning pre-shelved object %s for %s', filename, path)
-    else:
-        # that shelf does not exist, create it
-        th = Vectors.from_tsv(path, **kwargs)
-        logging.info('Shelving %s to %s', path, filename)
-        if len(th) > 0:  # don't bother with empty thesauri
-            th.to_shelf(filename)
-    return Delayed(Vectors, Vectors.from_shelf_readonly, filename, **kwargs)
-
-
-def gzip_single_thesaurus(vectors_path):
-    if os.path.exists(vectors_path):
-        # need force in case output file exists
-        if is_gzipped(vectors_path):
-            # file is already gzipped, just symlink
-            logging.info('Symlinking %s', vectors_path)
-            force_symlink(vectors_path, vectors_path + '.gz')
-        else:
-            # don't modify old file
-            run_and_log_output('gzip --force --best -c {0} > {0}.gz'.format(vectors_path))
-    else:
-        logging.warning('Thesaurus does not exist: %s', vectors_path)
-
-
-def gzip_all_thesauri(n_jobs):
-    """
-    Loads, parses and shelves all thesauri used in experiments.
-    """
-    # make sure thesauri that are used in multiple experiments are only shelved once
-    vector_paths = set(v.path for v in Vectors.select() if v.path)
-    Parallel(n_jobs=n_jobs)(delayed(gzip_single_thesaurus)(conf_file) for conf_file in vector_paths)
-
-
-def jsonify_single_labelled_corpus(corpus_path, tokenizer_conf=None):
-    """
-    Tokenizes an entire XML corpus (sentence segmented and dependency parsed), incl test and train chunk,
-    and writes its content to a single JSON gzip-ed file,
-    one document per line. Each line is a JSON array, the first value of which is the label of
-    the document, and the rest are JSON representation of a list of lists, containing all document
-    features of interest, e.g. nouns, adj, NPs, VPs, wtc.
-    The resultant document can be loaded with a GzippedJsonTokenizer.
-
-    :param corpus_path: path to the corpus
-    """
-
-    def _write_corpus_to_json(x_tr, y_tr, outfile):
-        vect = ThesaurusVectorizer(min_df=1,
-                                   train_time_opts={'extract_unigram_features': set('JNV'),
-                                                    'extract_phrase_features': set(['AN', 'NN', 'VO', 'SVO'])})
-        vect.extract_unigram_features = vect.train_time_opts['extract_unigram_features']
-        vect.extract_phrase_features = vect.train_time_opts['extract_phrase_features']
-        all_features = []
-        for doc in x_tr:
-            all_features.append([str(f) for f in vect.extract_features_from_token_list(doc)])
-
-        for document, label in zip(all_features, y_tr):
-            outfile.write(bytes(json.dumps([label, document]), 'UTF8'))
-            outfile.write(bytes('\n', 'UTF8'))
-
-    # load the dataset from XML
-    if tokenizer_conf is None:
-        # todo move whatever conf is contained in this file to a dict in the code and remove this conf file
-        tokenizer_conf = get_tokenizer_settings_from_conf_file('conf/exp1-superbase.conf')
-    x_tr, y_tr, x_test, y_test = get_tokenized_data(corpus_path, tokenizer_conf)
-    with gzip.open('%s.gz' % corpus_path, 'wb') as outfile:
-        _write_corpus_to_json(x_tr, y_tr, outfile)
-        logging.info('Writing %s to gzip json', corpus_path)
-        if x_test:
-            _write_corpus_to_json(x_test, y_test, outfile)
-
-
 def get_all_corpora():
     """
     Returns a manually compiled list of all corpora used in experiments
     :rtype: list
     """
-    return [
-        '/lustre/scratch/inf/mmb28/eval/sample-data/techtc100-clean/Exp_47456_497201-tagged',
-        '/lustre/scratch/inf/mmb28/eval/sample-data/techtc100-clean/Exp_324745_85489-tagged',
-        '/lustre/scratch/inf/mmb28/eval/sample-data/techtc100-clean/Exp_69753_85489-tagged',
-        '/lustre/scratch/inf/mmb28/eval/sample-data/techtc100-clean/Exp_186330_94142-tagged',
-        '/lustre/scratch/inf/mmb28/eval/sample-data/techtc100-clean/Exp_22294_25575-tagged',
-
-        '/lustre/scratch/inf/mmb28/eval/sample-data/reuters21578/r8-tagged-grouped',
-        '/lustre/scratch/inf/mmb28/eval/sample-data/movie-reviews-tagged',
-        '/lustre/scratch/inf/mmb28/eval/sample-data/amazon_grouped-tagged',
-        '/lustre/scratch/inf/mmb28/eval/sample-data/aclImdb-tagged',
-    ]
-
-
-def jsonify_all_labelled_corpora(n_jobs):
-    corpora = get_all_corpora()
-    logging.info(corpora)
-    Parallel(n_jobs=n_jobs)(delayed(jsonify_single_labelled_corpus)(corpus) for corpus in corpora)
+    return ['data/web-tagged']

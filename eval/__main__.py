@@ -408,7 +408,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Evaluate vector via document classification')
     parser.add_argument('conf_file',
                         help='Conf file that defines the experiment',
-                        type=lambda x: _is_valid_file(x))
+                        type=_is_valid_file)
 
     args = parser.parse_args()
     conf, configspec_file = parse_config_file(args.conf_file)

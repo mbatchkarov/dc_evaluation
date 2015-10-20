@@ -1,6 +1,8 @@
 import inspect
 import os
 import errno
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from eval.metrics import macroavg_prec, macroavg_f1, macroavg_rec, microavg_prec, microavg_rec, microavg_f1
 from eval.utils.reflection_utils import get_named_object
 import logging
 import numpy as np
@@ -27,7 +29,7 @@ def one(*args, **kwargs):
     return 1.
 
 
-class ChainCallable(object):
+def multiple_scores(true_labels, predicted_labels):
     """
     Chains several functions as specified in the configuration. When called
     returns the return values of all of its callables as a tuple
@@ -50,23 +52,14 @@ class ChainCallable(object):
     print ccall('A_B')
 
     """
-
-    def __init__(self, config):
-        self.config = config
-
-    def __call__(self, true_labels, predicted_labels):
-        to_call = [(x, get_named_object(x)) for x in
-                   self.config.keys() if self.config[x]['run']]
-        options = {}
-        result = {}
-        for func_name, func in to_call:
-            initialize_args = inspect.getargspec(func)[0]
-            call_args = {arg: val for arg, val in self.config[func_name].items()
-                         if val != '' and arg in initialize_args}
-            options[func_name] = call_args
-            result[func_name.strip()] = (
-                func(true_labels, predicted_labels, **call_args))
-        return result
+    to_call = [macroavg_prec, macroavg_rec, macroavg_f1,
+               microavg_prec, microavg_rec, microavg_f1,
+               accuracy_score]
+    result = {}
+    for func in to_call:
+        func_name = func.__name__
+        result[func_name] = func(true_labels, predicted_labels)
+    return result
 
 
 def calculate_log_odds(X, y, column_indices=None):

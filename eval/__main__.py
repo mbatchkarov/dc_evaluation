@@ -26,7 +26,7 @@ from eval.classifiers import (LeaveNothingOut, PredefinedIndicesIterator,
 from eval.composers.feature_selectors import MetadataStripper
 from eval.plugins.dumpers import FeatureVectorsCsvDumper
 from eval.utils.conf_file_utils import parse_config_file
-from eval.utils.misc import ChainCallable, update_dict_according_to_mask
+from eval.utils.misc import multiple_scores, update_dict_according_to_mask
 from eval.utils.reflection_utils import get_named_object
 from eval.utils.reflection_utils import get_intersection_of_parameters
 
@@ -300,7 +300,6 @@ def _cv_loop(config, cv_i, score_func, test_idx, train_idx, predefined_fit_args,
         pass
     return scores_this_cv_run
 
-
 def _analyze(scores, output_dir, name, class_names):
     """
     Stores a csv representation of the data set. Requires pandas
@@ -330,19 +329,6 @@ def _analyze(scores, output_dir, name, class_names):
                    columns=['classifier', 'cv_no', 'metric', 'score'])
     csv = os.path.join(output_dir, '%s.out-raw.csv' % name)
     df.to_csv(csv, na_rep='-1')
-
-    # now calculate mean and std
-    grouped = df.groupby(['classifier', 'metric'])
-    from numpy import mean, std
-
-    # the mean and std columns may be appended in any order, put them in the desired order
-    res = grouped['score'].aggregate({'score_mean': mean, 'score_std': std})[['score_mean', 'score_std']]
-
-    # store csv for analysis
-    csv = os.path.join(output_dir, '%s.out.csv' % name)
-    res.to_csv(csv, na_rep='-1')
-
-    return csv
 
 
 def run_experiment(conf, thesaurus=None):
@@ -375,11 +361,9 @@ def run_experiment(conf, thesaurus=None):
         x_vals = x_tr
 
     all_scores = []
-    score_func = ChainCallable(conf['evaluation'])
-
     params = []
     for i, (train_idx, test_idx) in enumerate(cv_iterator):
-        params.append((conf, i, score_func, test_idx, train_idx,
+        params.append((conf, i, multiple_scores, test_idx, train_idx,
                        fit_args, x_vals, y_vals))
         logging.warning('Only using the first CV fold')
         if len(cv_iterator) > 3:
@@ -390,9 +374,7 @@ def run_experiment(conf, thesaurus=None):
     scores_over_cv = [_cv_loop(*foo) for foo in params]
     all_scores.extend([score for one_set_of_scores in scores_over_cv for score in one_set_of_scores])
     class_names = dict(enumerate(sorted(set(y_vals))))
-    output_file = _analyze(all_scores, conf['output_dir'], conf['name'], class_names)
-    return output_file
-
+    _analyze(all_scores, conf['output_dir'], conf['name'], class_names)
     total_time = (datetime.now() - start_time).seconds / 60
     logging.info('MINUTES TAKEN %.2f' % total_time)
 

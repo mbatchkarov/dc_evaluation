@@ -1,17 +1,14 @@
 import sys
 
-from eval.__main__ import _is_valid_file
-
 sys.path.append('.')
 import json
 import gzip
-from eval.plugins.bov import ThesaurusVectorizer
-
-from joblib import Parallel, delayed
-
 import argparse
 import logging
+from joblib import Parallel, delayed
 from eval.utils.data_utils import get_all_corpora, get_tokenizer_settings_from_conf_file, get_tokenized_data
+from eval.plugins.bov import ThesaurusVectorizer
+from eval.__main__ import is_valid_file
 
 
 def jsonify_single_labelled_corpus(corpus_path, conf_file=None,
@@ -74,7 +71,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--conf', type=_is_valid_file, required=True,
+    parser.add_argument('--conf', type=is_valid_file, required=True,
                         help='Conf file that contains the parameters of the tokenizer')
 
     parser.add_argument('--jobs', type=int, default=4,

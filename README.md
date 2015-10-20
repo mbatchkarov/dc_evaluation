@@ -25,8 +25,8 @@ Process with Stanford CoreNLP (you will likely have to: to increase the maximum 
 
 ```
 cd DiscoUtils
-# edit stanford_utils.py and specify where your data and copy of CoreNLP are. See comments therein.
-python discoutils/stanford_utils.py
+cd ~/projects/DiscoUtils
+python discoutils/stanford_utils.py --data ../dc_evaluation/data/web --stanford ~/Downloads/stanford-corenlp-full-2015-04-20
 ```
 
 You can control what processing is done by CoreNLP. Find the line that says `tokenize,ssplit,pos,lemma,parse,ner` and add/delete as required. Note NER is very slow.
@@ -58,17 +58,16 @@ The columns are:
  - lemma
  - fine-grained PoS tag
  - NER tag
- - index of dependency head
+ -  index of dependency head
  - type of dependency relation
 
 If an annotator (e.g. NER) is disabled, its corresponding column will contain only underscores.
 
 ### Convert to gzipped json (for faster access)
-This extracts all features (words and phrases) of interest. You can select what you want to be extracted. Currently the only supported types are unigrams (filtered by PoS tag) and phrases (adjective-noun, noun-noun, verb-object or subject-verb-object compounds.)
+This extracts all features (words and phrases) of interest. You can select what you want to be extracted. Currently the only supported types are unigrams (filtered by PoS tag) and phrases (adjective-noun, noun-noun, verb-object or subject-verb-object compounds.).  Add your own phrase extractors as more models of composition become available. Edit `get_all_corpora` in `eval/data_utils.py` as required, then run:
 
-Edit `get_all_corpora` in `eval/data_utils.py` as required, then run:
-
-```bash
+```
+cd ~/projects/dc_evaluation
 python eval/scripts/compress_labelled_data.py --conf conf/exp0/exp0.conf --all
 ```
 
@@ -86,3 +85,11 @@ One document per line, the first item in the list being the label, and the secon
 ## Building word and phrase vectors
 
 ## Evaluating composed vectors
+
+# TODO
+ - auto-remove PostVectDump files, they are annoying
+ - document all entry points
+ - move tests to sane packages
+ - separate phrase extraction from a dep tree to a new module
+ - all entry points should take only cmd line args- no need to tweak source!
+ - ultimately the repo should contain some labelled and unlabelled data that the code can be run on

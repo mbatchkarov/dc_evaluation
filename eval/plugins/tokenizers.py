@@ -287,7 +287,7 @@ class ConllTokenizer(XmlTokenizer):
                     txt = '__NER-%s__' % iob_tag
                     pos = ''  # normalised named entities don't need a PoS tag
 
-            dependencies[(index, dependent_idx)] = dep_type
+            dependencies[(int(index), int(dependent_idx))] = dep_type
             tokens.append(Token(txt, pos, int(index), ner=iob_tag))
 
         token_index = {t.index: t for t in tokens}

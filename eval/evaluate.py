@@ -46,7 +46,7 @@ def _build_crossvalidation_iterator(config, y_train, y_test=None):
     The full text is provided as a parameter so that joblib can cache the
     call to this function.
     """
-    # todo document parameters and check all caller comply to the intended usage pattern
+    # todo document parameters and check all caller comply with the intended usage pattern
     logging.info('Building crossvalidation iterator')
     cv_type = config['type']
     k = config['k']
@@ -72,15 +72,6 @@ def _build_crossvalidation_iterator(config, y_train, y_test=None):
         iterator = cross_validation.KFold(dataset_size, n_folds=int(k), random_state=random_state)
     elif cv_type == 'skfold':
         iterator = cross_validation.StratifiedKFold(y_train, n_folds=int(k), random_state=random_state)
-    elif cv_type == 'loo':
-        iterator = cross_validation.LeaveOneOut(dataset_size, int(k))
-    elif cv_type == 'bootstrap':
-        ratio = config['ratio']
-        if k < 0:
-            logging.warning('crossvalidation.ratio not specified,defaulting to 0.8')
-            ratio = 0.8
-        iterator = cross_validation.Bootstrap(dataset_size, n_iter=int(k),
-                                              train_size=ratio, random_state=random_state)
     elif cv_type == 'oracle':
         iterator = LeaveNothingOut(dataset_size)
     elif cv_type == 'test_set' and y_test is not None:
@@ -92,8 +83,7 @@ def _build_crossvalidation_iterator(config, y_train, y_test=None):
                                                         config['sample_size'],
                                                         config['random_state'])
     else:
-        raise ValueError('Unrecognised crossvalidation type %(cv_type)s. The supported '
-                         'types are kfold, skfold, loo, bootstrap, '
+        raise ValueError('Unrecognised crossvalidation type %(cv_type)s. The supported types are kfold, skfold, '
                          'test_set, subsampled_test_set and oracle')
 
     return iterator, y_train
@@ -276,7 +266,6 @@ def _cv_loop(config, cv_i, score_func, test_idx, train_idx, predefined_fit_args,
             # if a feature selectors exist, use its vocabulary
             # step_name = 'fs' if 'fs' in pipeline.named_steps else 'vect'
             with open('%s.%s.pkl' % (stats.prefix, clf_name), 'wb') as outf:
-                # pickle files needs to open in 'wb' mode
                 logging.info('Pickling trained classifier to %s', outf.name)
                 b = Bunch(clf=clf, inv_voc=inv_voc, tr_matrix=tr_matrix,
                           test_matrix=test_matrix, predictions=predictions,
@@ -300,34 +289,19 @@ def _cv_loop(config, cv_i, score_func, test_idx, train_idx, predefined_fit_args,
         pass
     return scores_this_cv_run
 
-def _analyze(scores, output_dir, name, class_names):
+
+def _store_scores(scores, output_dir, name):
     """
-    Stores a csv representation of the data set. Requires pandas
+    Stores a csv representation of the results
     """
 
-    logging.info("Analysing results and saving to %s", output_dir)
-    cleaned_scores = []
-    for result in scores:
-        clf, run_no, metric, vals = result
-        if np.isscalar(vals):
-            # the value is a scalar, let it be
-            cleaned_scores.append(result)
-        else:
-            # the value is a list, e.g. per-class precision/recall/F1
-            for id, val in enumerate(vals):
-                # todo verify the correct class id is inserted here
-                cleaned_scores.append([clf,
-                                       run_no,
-                                       '%s-%s' % (metric, class_names[id]),
-                                       val])
-
-    # save raw results
-    if not cleaned_scores:
+    logging.info("Saving to %s", output_dir)
+    if not scores:
         raise ValueError('Scores are missing for this experiment. This may be because feature selection removed all '
                          'test documents for all folds, and accuracy could not be computed')
-    df = DataFrame(cleaned_scores,
+    df = DataFrame(scores,
                    columns=['classifier', 'cv_no', 'metric', 'score'])
-    csv = os.path.join(output_dir, '%s.out-raw.csv' % name)
+    csv = os.path.join(output_dir, '%s.scores.csv' % name)
     df.to_csv(csv, na_rep='-1')
 
 
@@ -366,15 +340,14 @@ def run_experiment(conf, thesaurus=None):
         params.append((conf, i, multiple_scores, test_idx, train_idx,
                        fit_args, x_vals, y_vals))
         logging.warning('Only using the first CV fold')
-        if len(cv_iterator) > 3:
-            # only use the first train/test split, unless there are very few folds, in
-            # which case this might be a unit test
+        if conf['crossvalidation']['break_after_first']:
+            # only do one train/test split to save time
+            logging.info('Exiting after first fold')
             break
 
     scores_over_cv = [_cv_loop(*foo) for foo in params]
     all_scores.extend([score for one_set_of_scores in scores_over_cv for score in one_set_of_scores])
-    class_names = dict(enumerate(sorted(set(y_vals))))
-    _analyze(all_scores, conf['output_dir'], conf['name'], class_names)
+    _store_scores(all_scores, conf['output_dir'], conf['name'])
     total_time = (datetime.now() - start_time).seconds / 60
     logging.info('MINUTES TAKEN %.2f' % total_time)
 

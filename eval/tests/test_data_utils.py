@@ -19,7 +19,7 @@ def test_jsonify_XML_corpus():
     # parse the XML directly
     x_tr, y_tr, _, _ = get_tokenized_data(train_set, tk)
 
-    jsonify_single_labelled_corpus(train_set, conf_file)
+    jsonify_single_labelled_corpus('unit_tests', train_set, conf_file)
     x_tr1, y_tr1, _, _ = get_tokenized_data(json_train_set, tk)
 
     # because the process of converting to json merges the train and test set, if a test set exists,

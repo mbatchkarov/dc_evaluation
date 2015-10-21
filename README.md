@@ -100,7 +100,50 @@ For the purposes of this example suppose we have processed a labelled classifica
 python eval/evaluate.py conf/exp0/exp0.conf
 ```
 
-Results will appear in `conf/exp0.output`.
+Results will appear in `conf/exp0.output`:
+
+ - **exp0.conf**: copy of configuration file used to produce this output
+ - **log.txt**: detailed experiment log
+ - **exp0.scores.csv**: scores for each classifier for each cross-validation fold
+ - **gold-cv0.csv**: gold-standard output for testing section of the labelled corpus
+ - **predictions-*-cv0.csv**: predictions of each classifier for testing section of the labelled corpus
+
+### Common types of experiments
+1. Non-distributional baseline
+ 
+ - decode_token_handler = eval.plugins.bov_feature_handlers.BaseFeatureHandler
+ - must_be_in_thesaurus = False
+
+2. Standard feature expansion
+ 
+ - decode_token_handler = eval.plugins.bov_feature_handlers.SignifierSignifiedFeatureHandler
+ - must_be_in_thesaurus = False
+
+
+3. Extreme feature expansion (EFE)
+ 
+ - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
+ - must_be_in_thesaurus = False
+ - neighbours_file = data/random_vectors.h5 (something)
+
+4. Non-compositional EFE
+
+ - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
+ - must_be_in_thesaurus = False
+ - neighbours_file = data/random_vectors.h5 (something)
+ - feature_extraction > train_time_opts > extract_unigram_features = J, N, V
+ - feature_extraction > train_time_opts > extract_phrase_features = ,
+ - feature_extraction > decode_time_opts > extract_unigram_features = J, N, V
+ - feature_extraction > decode_time_opts > extract_phrase_features = ,
+    
+# Code
+
+ Run unit tests with
+
+ ```
+ cd ~/projects/dc_evaluation
+ py.test eval/tests
+ ```
 
 # TODO
  - auto-remove PostVectDump files, they are annoying

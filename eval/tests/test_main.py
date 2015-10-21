@@ -134,8 +134,8 @@ def data(request):
         return tr_path, ev_path
     if kind == 'json':
         # convert corpus to gzipped JSON and try again
-        jsonify_single_labelled_corpus(tr_path, tokenizer_conf=tokenizer_opts)
-        jsonify_single_labelled_corpus(ev_path, tokenizer_conf=tokenizer_opts)
+        jsonify_single_labelled_corpus('unit_tests', tr_path, tokenizer_conf=tokenizer_opts)
+        jsonify_single_labelled_corpus('unit_tests', ev_path, tokenizer_conf=tokenizer_opts)
         return tr_path + '.gz', ev_path + '.gz'
 
 

@@ -2,8 +2,8 @@ name=string() # used to identify output files
 debug=boolean(default=False) #if true, pipelines will be pickled and feature vectors will be dumped as csv
 shuffle_targets=boolean(default=False) # randomly change the labels of all documents, sanity check
 
-training_data=string(default='')
-test_data=string(default='')
+training_data=string(default='') # training data
+test_data=string(default='') # optional test data. If none is provided crossvalidation can be done. Providing this is useful for unit testing or when using a corpus where the train-test split is pre-defined like Reuters-21578
 
 min_test_features = float() # minimum number of features in a document at train/decode time. Documents failing this test are removed from the data set.
 min_train_features = float() # these need to be a float when using similarity scores as term frequency 
@@ -57,16 +57,17 @@ min_train_features = float() # these need to be a float when using similarity sc
 		
 [crossvalidation]
 	run=boolean(default=True)
-	type = option('kfold', 'skfold', 'loo', 'bootstrap', 'oracle', 'subsampled_test_set', default='skfold') # subsampled_test_set only used in unit tests
-	k=integer(min=1,max=100)
+	type = option('kfold', 'skfold', 'oracle', 'subsampled_test_set', default='skfold') # cross-validation kind, e.g. stratified kfold; "oracle" means "use training data for testing", "test_set" means "test on the predefined test set, stored in a separate file", subsampled_test_set only used in unit tests
+	k=integer(min=1,max=100) # number of folds
     random_state=integer(default=0)
+    break_after_first=boolean(default=False)# whether to stop after first fold. This is how bootstrap confidence intervals are implemented.
 
 [feature_selection]
     run=boolean(default=True)
     method=string(default='thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest')
     scoring_function=string(default='') # if nothing is passed in, thesisgenereator will use chi2
     must_be_in_thesaurus=boolean(default=False)
-    k=integer(default=99999999999999) # if doing feature selection by chi-squared, how many features to keep
+    k=integer(default=99999999999999) # if doing feature selection by chi-squared, how many features to keep. . disabled by default
     min_log_odds_score=float(default=0) # features with a log odds score outside the range [-min_log_odds_score, min_log_odds_score] will be removed. If a non-positive value is provided here, log-odds filtering will not be used.
 
 [classifiers]

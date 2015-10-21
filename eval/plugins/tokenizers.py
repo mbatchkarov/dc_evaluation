@@ -248,7 +248,7 @@ class ConllTokenizer(XmlTokenizer):
         tokens = []
         dependencies = {}  # (from_idx, to_idx) --> type
         for line in lines:
-            index, txt, lemma, pos, ner, dependent_idx, dep_type = line.split('\t')
+            idx, txt, lemma, pos, ner, head_idx, dep_type = line.split('\t')
             if self.lemmatize:
                 txt = lemma
                 # check if the token is a number/stopword before things have been done to it
@@ -287,8 +287,8 @@ class ConllTokenizer(XmlTokenizer):
                     txt = '__NER-%s__' % iob_tag
                     pos = ''  # normalised named entities don't need a PoS tag
 
-            dependencies[(int(index), int(dependent_idx))] = dep_type
-            tokens.append(Token(txt, pos, int(index), ner=iob_tag))
+            dependencies[(int(idx), int(head_idx))] = dep_type
+            tokens.append(Token(txt, pos, int(idx), ner=iob_tag))
 
         token_index = {t.index: t for t in tokens}
 
@@ -297,9 +297,9 @@ class ConllTokenizer(XmlTokenizer):
         dep_tree = nx.DiGraph()
         dep_tree.add_nodes_from(tokens)
 
-        for (head_idx, dependent_idx), type in dependencies.items():
-            if dependent_idx in tokens_ids and head_idx in tokens_ids:
-                dep_tree.add_edge(token_index[head_idx], token_index[dependent_idx], type=type)
+        for (dep_idx, head_idx), type in dependencies.items():
+            if head_idx in tokens_ids and dep_idx in tokens_ids:
+                dep_tree.add_edge(token_index[head_idx], token_index[dep_idx],  type=type)
         return dep_tree
 
 

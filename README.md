@@ -68,7 +68,7 @@ This extracts all features (words and phrases) of interest. You can select what 
 
 ```
 cd ~/projects/dc_evaluation
-python eval/scripts/compress_labelled_data.py --conf conf/exp0/exp0.conf --all
+python eval/scripts/compress_labelled_data.py --conf conf/exp0/exp0.conf --all --write-features
 ```
 
 PyPy might speed this part significantly. The output is (a compressed version of) the following:
@@ -79,6 +79,8 @@ PyPy might speed this part significantly. The output is (a compressed version of
 ```
 
 One document per line, the first item in the list being the label, and the second item is a list of document features.
+
+`compress_labelled_data.py` takes an additional boolean flag, `--write-features`, which is disabled by default. If true, a set of additional files will be written to `./features_in_labelled` for each labelled corpus. These contain a list of all extracted document features, a list of all noun phrase modifiers, a list of all verbs that appear in verb phrases, etc. I found these convenient during my PhD, as they make it easy to invoke compositional algorithms in batch. You may have no use for these files.
 
 ### Extract phrases to compose
 

@@ -178,7 +178,9 @@ def get_thesaurus_entries(tsv_file):
 
 def get_all_corpora():
     """
-    Returns a manually compiled list of all corpora used in experiments
+    Returns a manually compiled list of all corpora used in experiments. Each entry is a tuple of
+    (short_name, path_on_disk)
+
     :rtype: list
     """
-    return ['data/web-tagged']
+    return [('web', 'data/web-tagged')]

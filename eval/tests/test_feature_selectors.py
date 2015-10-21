@@ -1,3 +1,4 @@
+from glob import glob
 import os
 from discoutils.thesaurus_loader import Vectors
 import numpy as np
@@ -298,3 +299,9 @@ def _check_debug_file(ev_matrix, tr_matrix, voc):
         t.assert_array_equal(matrix, df.ix[:, 4:].as_matrix())
         os.remove(filename)
 
+def teardown_module(module):
+    """
+    This is a pytest module-level teardown function
+    """
+    for filename in glob("PostVectDump_fs-test_*csv"):
+        os.remove(filename)

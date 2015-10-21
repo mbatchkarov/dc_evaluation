@@ -18,16 +18,16 @@ min_train_features = float() # these need to be a float when using similarity sc
 
     # extra options required by the Bag-of-Vectors project Vectorizer
     random_neighbour_thesaurus=boolean(default=False) # if true, k random in-vocabulary neighbours will be returned at decode time
-    k=integer(min=0) # how many neighbours per entry to read
+    k=integer(min=0) # how many neighbours per entry to read. This is multiplied by 8 to account for lexical overlap
     lemmatize=boolean(default=True) 
     use_pos=boolean(default=True) # big cat -> big/JJ cat/NNS
-	coarse_pos=boolean(default=True) 
+	coarse_pos=boolean(default=True) # big/JJ -> big/J
 	normalise_entities=boolean(default=False) # all named entities -> PERSON/LOCATION/MISC
 
-	record_stats=boolean(default=False)
+	record_stats=boolean(default=False) # write information about replacements made at decode time to ./statistics
 	sim_compressor=string(default='thesisgenerator.utils.misc.unit') # how to scale the sim between two features in a thesaurus when replacing
 
-	train_token_handler=string(default='thesisgenerator.plugins.bov_feature_handlers.BaseFeatureHandler') # specified which class to handle the convertion of tokens/ngrams to features, signifier/signified
+	train_token_handler=string(default='thesisgenerator.plugins.bov_feature_handlers.BaseFeatureHandler') # specified which class to handle the convertion of tokens/ngrams to features
 	decode_token_handler=string(default='thesisgenerator.plugins.bov_feature_handlers.BaseFeatureHandler')
     
     [[train_time_opts]] # things to do at train time
@@ -39,10 +39,9 @@ min_train_features = float() # these need to be a float when using similarity sc
 
 [tokenizer]
 	lowercase=boolean(default=True)
-    keep_only_IT=boolean(default=False)
     remove_stopwords=boolean(default=False)
 	remove_short_words=boolean(default=False)
-	remove_long_words=boolean(default=False)
+	remove_long_words=boolean(default=False) # probably noise anyway.
 
 [vector_sources] # this section will eventually replace all thesaurus-related options. There will not be a pre-computed sim matrix, just vectors in a suitable datastructure that allows fast online sim calculation
 	neighbours_file = list(default=[]) # path to either a Byblo neighbours.strings file or an events.filtered.string file
@@ -50,7 +49,6 @@ min_train_features = float() # these need to be a float when using similarity sc
 	sim_threshold=float(default=0.0) # exclude neighbours from thesaurus if sim is less than threshold
 	allow_lexical_overlap = boolean(default=True) # when a thesaurus is loaded from disk and this is set to true, neighbours that overlap lexically with the base entry will be removed. See unit test for spec.
     max_neighbours = integer(default=99999999999999) # how many neighbours of each entry to keep in memory
-    use_shelf = boolean(default=False) # whether to use the shelve module to persist thesauri/vectors to disk in an attempt to reduce memory usage
     neighbour_strategy = option('linear', 'skipping', default='linear') # how to find nearest neighbours. Linear means just the usual way- sorting all neighbours by sim ans yielding from this list. Skipping means the i+1-th returned neighbour is the top neighbour of the i-th neighbour.
     noise=float(default=0) # proportion of mean value of non-zero entries in vector to add as noise
 	clusters_file = string(default='')
@@ -66,7 +64,7 @@ min_train_features = float() # these need to be a float when using similarity sc
     run=boolean(default=True)
     method=string(default='thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest')
     scoring_function=string(default='') # if nothing is passed in, thesisgenereator will use chi2
-    must_be_in_thesaurus=boolean(default=False)
+    must_be_in_thesaurus=boolean(default=False)  # whether to remove document features without a distributional representation
     k=integer(default=99999999999999) # if doing feature selection by chi-squared, how many features to keep. . disabled by default
     min_log_odds_score=float(default=0) # features with a log odds score outside the range [-min_log_odds_score, min_log_odds_score] will be removed. If a non-positive value is provided here, log-odds filtering will not be used.
 

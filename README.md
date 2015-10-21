@@ -135,7 +135,13 @@ Results will appear in `conf/exp0.output`:
  - feature_extraction > train_time_opts > extract_phrase_features = ,
  - feature_extraction > decode_time_opts > extract_unigram_features = J, N, V
  - feature_extraction > decode_time_opts > extract_phrase_features = ,
-    
+
+Common configuration pitfalls:
+ 
+ - features extracted and train time do not overlap with (or are not distributionally comparable to) those at test time, e.g. nouns only at train time and verbs only at test time
+ - feature selection too aggressive. This can be because `min_test_features` is too high, or because the distributional model (`neighbours_file`) does not contain vector for most of the document features. 
+ - mismatch between preprocessing of labelled and unlabelled data, e.g. distributional vectors say `cat/NNS` and labelled documents say `cat/N`. Settings to watch are `use_pos`, `coarse_pos` and `lowercase`.
+
 # Code
 
  Run unit tests with

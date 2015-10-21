@@ -143,6 +143,3 @@ class MetadataStripper(BaseEstimator, TransformerMixin):
     def transform(self, X, **kwargs):
         # if X is a tuple, strip metadata, otherwise let it be
         return X[0] if tuple(X) == X else X
-
-    def get_params(self, deep=True):
-        return super(MetadataStripper, self).get_params(deep)

@@ -8,7 +8,6 @@ sys.path.append('.')
 import argparse
 
 import pickle
-import sys
 import os
 import shutil
 import logging
@@ -46,8 +45,6 @@ def _build_crossvalidation_iterator(config, y_train, y_test=None):
     The full text is provided as a parameter so that joblib can cache the
     call to this function.
     """
-    # todo document parameters and check all caller comply with the intended usage pattern
-    logging.info('Building crossvalidation iterator')
     cv_type = config['type']
     k = config['k']
     dataset_size = len(y_train)
@@ -55,9 +52,8 @@ def _build_crossvalidation_iterator(config, y_train, y_test=None):
     if y_test is not None:
         logging.warning('You have requested test set to be used for evaluation.')
         if cv_type != 'test_set' and cv_type != 'subsampled_test_set':
-            logging.error('Wrong crossvalidation type. Only test_set '
-                          'or subsampled_test_set are permitted with a test set')
-            sys.exit(1)
+            raise ValueError('Wrong crossvalidation type. Only test_set '
+                             'or subsampled_test_set are permitted with a test set')
 
         train_indices = range(dataset_size)
         test_indices = range(dataset_size, dataset_size + len(y_test))

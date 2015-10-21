@@ -9,7 +9,7 @@ import scipy.sparse as sp
 from discoutils.thesaurus_loader import Thesaurus
 from eval.composers.vectorstore import DummyThesaurus
 
-from eval import __main__
+from eval import evaluate
 from eval.scripts.compress_labelled_data import jsonify_single_labelled_corpus
 from eval.tests.test_feature_selectors import strip
 from eval.utils.data_utils import get_tokenized_data
@@ -83,7 +83,7 @@ def _vectorize_data(data_paths, feature_selection_conf=feature_selection_conf(),
             'debug': True,
             'output_dir': '.'}
     feature_selection_conf['thesaurus'] = vector_source
-    pipeline, fit_params = __main__._build_pipeline(
+    pipeline, fit_params = evaluate._build_pipeline(
         conf,
         {'vector_source': vector_source},
         12345,  # id for naming debug files

@@ -1,14 +1,20 @@
 # Evaluation via document classification
 
+## Prerequisites
+	
+ - Python 3.2+ (legacy Python not supported)
+ - standard Python scientific stack (`numpy`, `scipy`, `scikit-learn`, etc)
+ - Stanford CoreNLP (tested with version `3.5.2` from 2015-04-20)
+ - sample corpus of labelled documents located at `data/web`
+ - pre-computed vectors for words and phrases of interest. This distribution includes randomly generated vectors, stored at `data/random_vectors.h5`
 
 ## Preparing labelled data
 
 The following steps are needed to prepared a labelled corpus for use in the system:
 
 
-
-### Convert labelled data to mallet format
-Directory structure of the labelled data
+### Convert labelled data to format
+Your labelled corpora must follow the directory structure of the provided example:
 ```
 web ------------------------> top-level container
 ├── de --------------------->  class 1
@@ -21,7 +27,7 @@ web ------------------------> top-level container
 
 
 ### Process with Stanford pipeline
-Process with Stanford CoreNLP (you will likely have to: to increase the maximum amount of memory available to the JVM):
+Process each labelled corpus with Stanford CoreNLP (you will likely have to: to increase the maximum amount of memory available to the JVM):
 
 ```
 cd DiscoUtils
@@ -29,9 +35,9 @@ cd ~/projects/DiscoUtils
 python discoutils/stanford_utils.py --data ../dc_evaluation/data/web --stanford ~/Downloads/stanford-corenlp-full-2015-04-20
 ```
 
-You can control what processing is done by CoreNLP. Find the line that says `tokenize,ssplit,pos,lemma,parse,ner` and add/delete as required. Note NER is very slow.
+You can control what processing is done by CoreNLP. Find the line that says `tokenize,ssplit,pos,lemma,parse,ner` and add/delete as required. Note NER is optional and very slow.
 
-For our example data set, this produces a `web-tagged` directory, whose structure matches that of `web`. Files are CoNLL-formatted:
+For our example data set, this produces a `web-tagged` directory, whose structure matches that of `web`. Files are CoNLL-formatted, e.g.:
 
 ```
 1	He	he	PRP	O	2	nsubj
@@ -70,8 +76,7 @@ This extracts all features (words and phrases) of interest. You can select what 
 cd ~/projects/dc_evaluation
 python eval/scripts/compress_labelled_data.py --conf conf/exp0/exp0.conf --all --write-features
 ```
-
-PyPy might speed this part significantly. The output is (a compressed version of) the following:
+A configuration file containing tokenisation settings is required. This is detailed below. The output is (a compressed version of) the following:
 
 ```
 ["de", ["war/N", "zu/N"]]
@@ -82,11 +87,20 @@ One document per line, the first item in the list being the label, and the secon
 
 `compress_labelled_data.py` takes an additional boolean flag, `--write-features`, which is disabled by default. If true, a set of additional files will be written to `./features_in_labelled` for each labelled corpus. These contain a list of all extracted document features, a list of all noun phrase modifiers, a list of all verbs that appear in verb phrases, etc. I found these convenient during my PhD, as they make it easy to invoke compositional algorithms in batch. You may have no use for these files.
 
-### Extract phrases to compose
-
 ## Building word and phrase vectors
+Use your preferred distributional method to build vectors for unigrams and phrases contained in all labelled corpora. These were extracted in the previous step.
+
+During my PhD I used [this code](https://github.com/mbatchkarov/vector_builder) to build word and phrase vectors. See examples in that repository.
 
 ## Evaluating composed vectors
+
+For the purposes of this example suppose we have processed a labelled classification corpus as described above and stored it to `data/web-tagged.gz`. We have also generated a random vectors for each document feature in the labelled corpus, and that they are stored in `data/random_vectors.h5`. We need a to write a configuration file to control the evaluation process. An example file is provided at `data/exp0/exp0.conf`. The file `conf/confrc` specifies the format of the configuration files and describes the meaning of each parameter. Configuration files are checked against the specification in `confrc` at the start of each experiments. You are ready to run an evaluation:
+
+```
+python eval/evaluate.py conf/exp0/exp0.conf
+```
+
+Results will appear in `conf/exp0.output`.
 
 # TODO
  - auto-remove PostVectDump files, they are annoying

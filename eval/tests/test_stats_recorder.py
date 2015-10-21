@@ -7,7 +7,7 @@ from glob import glob
 import six
 from discoutils.thesaurus_loader import Thesaurus
 from discoutils.tokens import DocumentFeature
-from eval.__main__ import run_experiment
+from eval.evaluate import run_experiment
 from eval.utils.conf_file_utils import parse_config_file
 
 """

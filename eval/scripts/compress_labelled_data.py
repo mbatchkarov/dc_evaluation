@@ -13,7 +13,7 @@ import logging
 from joblib import Parallel, delayed
 from eval.utils.data_utils import get_all_corpora, get_tokenizer_settings_from_conf_file, get_tokenized_data
 from eval.plugins.bov import ThesaurusVectorizer
-from eval.__main__ import is_valid_file
+from eval.evaluate import is_valid_file
 
 ROOT = 'features_in_labelled'
 

@@ -4,7 +4,7 @@ from itertools import groupby
 from operator import itemgetter
 from numpy import array
 from numpy.testing import assert_array_equal
-from eval.__main__ import _build_crossvalidation_iterator
+from eval.evaluate import _build_crossvalidation_iterator
 
 __author__ = 'mmb28'
 

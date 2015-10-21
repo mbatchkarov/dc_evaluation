@@ -152,9 +152,6 @@ Results will appear in `conf/exp0.output`:
  ```
 
 # TODO
- - auto-remove PostVectDump files, they are annoying
- - document all entry points
- - move tests to sane packages
+ - move tests to sane packages and reorganise 
  - separate phrase extraction from a dep tree to a new module
- - all entry points should take only cmd line args- no need to tweak source!
- - ultimately the repo should contain some labelled and unlabelled data that the code can be run on
+ - check all entry points take only cmd line args- no need to tweak source! 

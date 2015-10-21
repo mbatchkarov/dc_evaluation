@@ -98,38 +98,4 @@ min_train_features = float() # these need to be a float when using similarity sc
 		alpha=float(default=0.1)
 		threshold=float(default=0.0)
 
-[evaluation]
-    [[sklearn.metrics.precision_score]]
-        run=boolean(default=False)
-		average=option('micro', 'macro', 'weighted', default=None)
-
-	[[sklearn.metrics.recall_score]]
-		run=boolean(default=False)
-		average=option('micro', 'macro', 'weighted', default=None)
-
-	[[sklearn.metrics.f1_score]]
-		run=boolean(default=False)
-        average=option('micro', 'macro', 'weighted', default=None)
-
-	[[thesisgenerator.metrics.macroavg_prec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.macroavg_rec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.macroavg_f1]]
-    	run=boolean(default=False)
-
-    [[thesisgenerator.metrics.microavg_prec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.microavg_rec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.microavg_f1]]
-    	run=boolean(default=False)
-
-    [[sklearn.metrics.accuracy_score]]
-        run=boolean(default=False)
-
 

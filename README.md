@@ -109,34 +109,34 @@ Results will appear in `conf/exp0.output`:
  - **predictions-*-cv0.csv**: predictions of each classifier for testing section of the labelled corpus
 
 ### Common types of experiments
-1. Non-distributional baseline
+
+- Non-distributional baseline
  
- - decode_token_handler = eval.plugins.bov_feature_handlers.BaseFeatureHandler
- - must_be_in_thesaurus = False
+	 - decode_token_handler = eval.plugins.bov_feature_handlers.BaseFeatureHandler
+	 - must_be_in_thesaurus = False
 
-2. Standard feature expansion
+- Standard feature expansion
  
- - decode_token_handler = eval.plugins.bov_feature_handlers.SignifierSignifiedFeatureHandler
- - must_be_in_thesaurus = False
+	 - decode_token_handler = eval.plugins.bov_feature_handlers.SignifierSignifiedFeatureHandler
+	 - must_be_in_thesaurus = False
 
-
-3. Extreme feature expansion (EFE)
+- Extreme feature expansion (EFE)
  
- - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
- - must_be_in_thesaurus = False
- - neighbours_file = data/random_vectors.h5 (something)
+	 - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
+	 - must_be_in_thesaurus = False
+	 - neighbours_file = data/random_vectors.h5 (something)
 
-4. Non-compositional EFE
+- Non-compositional EFE
 
- - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
- - must_be_in_thesaurus = False
- - neighbours_file = data/random_vectors.h5 (something)
- - feature_extraction > train_time_opts > extract_unigram_features = J, N, V
- - feature_extraction > train_time_opts > extract_phrase_features = ,
- - feature_extraction > decode_time_opts > extract_unigram_features = J, N, V
- - feature_extraction > decode_time_opts > extract_phrase_features = ,
+	 - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
+	 - must_be_in_thesaurus = False
+	 - neighbours_file = data/random_vectors.h5 (something)
+	 - feature_extraction > train_time_opts > extract_unigram_features = J, N, V
+	 - feature_extraction > train_time_opts > extract_phrase_features = ,
+	 - feature_extraction > decode_time_opts > extract_unigram_features = J, N, V
+	 - feature_extraction > decode_time_opts > extract_phrase_features = ,
 
-Common configuration pitfalls:
+### Common configuration pitfalls:
  
  - features extracted and train time do not overlap with (or are not distributionally comparable to) those at test time, e.g. nouns only at train time and verbs only at test time
  - feature selection too aggressive. This can be because `min_test_features` is too high, or because the distributional model (`neighbours_file`) does not contain vector for most of the document features. 

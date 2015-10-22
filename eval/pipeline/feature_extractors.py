@@ -6,7 +6,7 @@ from discoutils.tokens import DocumentFeature
 
 class FeatureExtractor(object):
     def __init__(self, remove_features_with_NER=False,
-                 extract_unigram_features='J,N',
+                 extract_unigram_features='J,N,V',
                  extract_phrase_features=['AN', 'NN', 'SVO'],
                  standard_ngram_features=0):
         self.remove_features_with_NER = remove_features_with_NER

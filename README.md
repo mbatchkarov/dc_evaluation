@@ -95,6 +95,12 @@ Use your preferred distributional method to build vectors for unigrams and phras
 
 During my PhD I used [this code](https://github.com/mbatchkarov/vector_builder) to build word and phrase vectors. See examples in that repository.
 
+## Cluster distributed representations [optional]
+
+```
+python eval/scripts/kmeans_disco.py --input data/random_vectors.h5 --output data/random_vectors.h5.kmeans.k2 --num-clusters 5
+```
+
 ## Evaluating composed vectors
 
 For the purposes of this example suppose we have processed a labelled classification corpus as described above and stored it to `data/web-tagged.gz`. We have also generated a random vectors for each document feature in the labelled corpus, and that they are stored in `data/random_vectors.h5`. We need a to write a configuration file to control the evaluation process. An example file is provided at `data/exp0/exp0.conf`. The file `conf/confrc` specifies the format of the configuration files and describes the meaning of each parameter. Configuration files are checked against the specification in `confrc` at the start of each experiments. You are ready to run an evaluation:
@@ -115,12 +121,12 @@ Results will appear in `conf/exp0.output`:
 
 - Non-distributional baseline
  
-	 - decode_token_handler = eval.pipeline.bov_feature_handlers.BaseFeatureHandler
+	 - decode_token_handler = eval.pipeline.feature_handlers.BaseFeatureHandler
 	 - must_be_in_thesaurus = False
 
 - Standard feature expansion
  
-	 - decode_token_handler = eval.pipeline.bov_feature_handlers.SignifierSignifiedFeatureHandler
+	 - decode_token_handler = eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler
 	 - must_be_in_thesaurus = False
 
 - Extreme feature expansion (EFE)
@@ -131,13 +137,19 @@ Results will appear in `conf/exp0.output`:
 
 - Non-compositional EFE
 
-	 - decode_token_handler = eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler
+	 - decode_token_handler = eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler
 	 - must_be_in_thesaurus = False
-	 - neighbours_file = data/random_vectors.h5 (something)
+	 - neighbours_file = data/random_vectors.h5 # some vectors
 	 - feature_extraction > train_time_opts > extract_unigram_features = J, N, V
 	 - feature_extraction > train_time_opts > extract_phrase_features = ,
 	 - feature_extraction > decode_time_opts > extract_unigram_features = J, N, V
 	 - feature_extraction > decode_time_opts > extract_phrase_features = ,
+
+- Using clustered representation
+ 	 - decode_token_handler = eval.pipeline.multivectors.KmeansVectorizer
+	 - must_be_in_thesaurus = False
+	 - neighbours_file = , # empty list
+	 - clusters_file = asdf.kmeans # some file produced by clustering step above
 
 ### Common configuration pitfalls:
  

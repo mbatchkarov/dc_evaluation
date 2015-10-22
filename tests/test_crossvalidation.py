@@ -1,7 +1,5 @@
 from collections import Counter
 from unittest import TestCase
-from itertools import groupby
-from operator import itemgetter
 from numpy import array
 from numpy.testing import assert_array_equal
 from eval.evaluate import _build_crossvalidation_iterator

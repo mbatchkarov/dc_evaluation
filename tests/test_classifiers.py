@@ -1,8 +1,10 @@
 # coding=utf-8
 from collections import Counter
+
 from numpy import zeros
-from eval.classifiers import MostCommonLabelClassifier, SubsamplingPredefinedIndicesIterator
 import numpy as np
+
+from eval.pipeline.classifiers import MostCommonLabelClassifier, SubsamplingPredefinedIndicesIterator
 
 
 def test_predict():

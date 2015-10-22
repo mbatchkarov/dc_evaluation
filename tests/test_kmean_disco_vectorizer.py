@@ -1,8 +1,11 @@
 import logging
+
 import pytest
 import numpy as np
 import pandas as pd
-from eval.plugins.kmeans_disco import KmeansVectorizer, cluster_vectors
+
+from eval.scripts.kmeans_disco import cluster_vectors
+from eval.pipeline.multivectors import KmeansVectorizer
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s\t%(module)s.%(funcName)s (line %(lineno)d)\t%(levelname)s : %(message)s")

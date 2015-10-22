@@ -4,8 +4,8 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from io import StringIO
-from eval.plugins.dumpers import ConsolidatedResultsCsvWriter
-import eval.plugins.dumpers as d
+from eval.pipeline.dumpers import ConsolidatedResultsCsvWriter
+import eval.pipeline.dumpers as d
 
 
 

@@ -3,16 +3,16 @@ import logging
 import os
 import random
 
-from discoutils.thesaurus_loader import Vectors
-from discoutils.misc import is_gzipped, _check_file_magic
 import numpy as np
 import pandas as pd
 from sklearn.datasets import load_files
 
-from eval.plugins.tokenizers import GzippedJsonTokenizer, ConllTokenizer, XmlTokenizer
+from discoutils.thesaurus_loader import Vectors
+from discoutils.misc import is_gzipped, _check_file_magic
+from eval.pipeline.tokenizers import GzippedJsonTokenizer, ConllTokenizer, XmlTokenizer
 from eval.utils.conf_file_utils import parse_config_file
-from eval.composers.vectorstore import RandomThesaurus
-from eval.plugins.multivectors import MultiVectors
+from eval.pipeline.thesauri import RandomThesaurus
+from eval.pipeline.multivectors import MultiVectors
 
 
 def tokenize_data(data, tokenizer, corpus_ids):

@@ -37,7 +37,7 @@ def test_get_pipeline_fit_args():
             'must_be_in_thesaurus': True
         },
         'feature_extraction': {
-            'decode_token_handler': 'eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler',
+            'decode_token_handler': 'eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler',
             'random_neighbour_thesaurus': False,
         },
         'vector_sources': {

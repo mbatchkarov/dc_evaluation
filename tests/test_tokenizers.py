@@ -1,7 +1,7 @@
 # coding=utf-8
 from operator import attrgetter
 from unittest import TestCase
-from eval.plugins.tokenizers import XmlTokenizer, is_number
+from eval.pipeline.tokenizers import XmlTokenizer, is_number
 from discoutils.tokens import Token
 
 try:

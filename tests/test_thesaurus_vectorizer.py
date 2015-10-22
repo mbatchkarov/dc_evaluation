@@ -1,8 +1,8 @@
 import pytest
 import networkx as nx
 
-from eval.plugins.bov import ThesaurusVectorizer
-from eval.plugins.tokenizers import XmlTokenizer
+from eval.pipeline.bov import ThesaurusVectorizer
+from eval.pipeline.tokenizers import XmlTokenizer
 from discoutils.tokens import DocumentFeature, Token
 
 

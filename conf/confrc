@@ -10,7 +10,7 @@ min_train_features = float() # these need to be a float when using similarity sc
 
 [feature_extraction]
     run=boolean(default=True)
-    vectorizer=string(default='eval.plugins.bov.ThesaurusVectorizer') # class of vectorizer
+    vectorizer=string(default='eval.pipeline.bov.ThesaurusVectorizer') # class of vectorizer
     min_df=integer(default=0)
     use_tfidf=boolean(default=False)
     
@@ -27,8 +27,8 @@ min_train_features = float() # these need to be a float when using similarity sc
 	record_stats=boolean(default=False) # write information about replacements made at decode time to ./statistics
 	sim_compressor=string(default='eval.utils.misc.unit') # how to scale the sim between two features in a thesaurus when replacing
 
-	train_token_handler=string(default='eval.plugins.bov_feature_handlers.BaseFeatureHandler') # specified which class to handle the convertion of tokens/ngrams to features
-	decode_token_handler=string(default='eval.plugins.bov_feature_handlers.BaseFeatureHandler')
+	train_token_handler=string(default='eval.pipeline.bov_feature_handlers.BaseFeatureHandler') # specified which class to handle the convertion of tokens/ngrams to features
+	decode_token_handler=string(default='eval.pipeline.bov_feature_handlers.BaseFeatureHandler')
     
     [[train_time_opts]] # things to do at train time
         extract_unigram_features=list(default=None) # PoS tags of unigram features to be extracted. If None, no unigram feats are used
@@ -62,7 +62,7 @@ min_train_features = float() # these need to be a float when using similarity sc
 
 [feature_selection]
     run=boolean(default=True)
-    method=string(default='eval.composers.feature_selectors.VectorBackedSelectKBest')
+    method=string(default='eval.pipeline.feature_selectors.VectorBackedSelectKBest')
     scoring_function=string(default='') # if nothing is passed in, thesisgenereator will use chi2
     must_be_in_thesaurus=boolean(default=False)  # whether to remove document features without a distributional representation
     k=integer(default=99999999999999) # if doing feature selection by chi-squared, how many features to keep. . disabled by default

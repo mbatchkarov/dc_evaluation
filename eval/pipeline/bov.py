@@ -3,15 +3,17 @@ from collections import defaultdict
 import logging
 import array
 import numbers
-import networkx as nx
 from operator import attrgetter
+
+import networkx as nx
 import scipy.sparse as sp
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-from eval.classifiers import NoopTransformer
-from eval.plugins.bov_feature_handlers import get_token_handler
 from discoutils.tokens import DocumentFeature
-from eval.plugins.stats import get_stats_recorder
+
+from eval.pipeline.classifiers import NoopTransformer
+from eval.pipeline.bov_feature_handlers import get_token_handler
+from eval.pipeline.stats import get_stats_recorder
 
 
 class ThesaurusVectorizer(TfidfVectorizer):
@@ -31,8 +33,8 @@ class ThesaurusVectorizer(TfidfVectorizer):
                  sublinear_tf=False, use_tfidf=True,
                  record_stats=True, k=1,
                  sim_compressor='eval.utils.misc.unit',
-                 train_token_handler='eval.plugins.bov_feature_handlers.BaseFeatureHandler',
-                 decode_token_handler='eval.plugins.bov_feature_handlers.BaseFeatureHandler',
+                 train_token_handler='eval.pipeline.bov_feature_handlers.BaseFeatureHandler',
+                 decode_token_handler='eval.pipeline.bov_feature_handlers.BaseFeatureHandler',
                  train_time_opts={'extract_unigram_features': ['J', 'N'],
                                   'extract_phrase_features': ['AN', 'NN', 'VO', 'SVO']},
                  decode_time_opts={'extract_unigram_features': '',

@@ -1,15 +1,5 @@
 from random import sample
 from discoutils.thesaurus_loader import Thesaurus
-from discoutils.tokens import DocumentFeature
-
-
-def check_vectors(unigram_source):
-    if not unigram_source:
-        raise ValueError('Composers need a unigram vector source')
-    if not hasattr(unigram_source, 'get_vector'):
-        raise ValueError('Creating a composer requires a Vectors data structure that holds unigram vectors')
-    return unigram_source
-
 
 
 class DummyThesaurus(Thesaurus):
@@ -52,8 +42,3 @@ class RandomThesaurus(DummyThesaurus):
         if not self.vocab:
             raise ValueError('You need to provide a set of value to choose from first.')
         return [(str(foo), 1.) for foo in sample(self.vocab, self.k)]
-
-
-def _default_row_filter(feat_str: str, feat_df: DocumentFeature):
-    return feat_df.tokens[0].pos in {'N', 'J', 'V'} and feat_df.type == '1-GRAM'
-

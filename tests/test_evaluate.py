@@ -6,14 +6,13 @@ from discoutils.misc import mkdirs_if_not_exists
 from eval.evaluate import run_experiment
 from eval.utils.conf_file_utils import parse_config_file
 
-base_handler = 'eval.plugins.bov_feature_handlers.BaseFeatureHandler'
-hybrid_handler = 'eval.plugins.bov_feature_handlers.SignifierSignifiedFeatureHandler'
-extreme_handler = 'eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler'
+base_handler = 'eval.pipeline.bov_feature_handlers.BaseFeatureHandler'
+hybrid_handler = 'eval.pipeline.bov_feature_handlers.SignifierSignifiedFeatureHandler'
+extreme_handler = 'eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler'
 
 conf_file = 'eval/resources/conf/exp0/exp0.conf'
 output_file = 'eval/resources/conf/exp0/output/tests-exp0.scores.csv'
-# conf_file = 'conf/exp0/exp0.conf'
-# output_file = 'conf/exp0/output/exp0.scores.csv'
+
 
 @pytest.fixture
 def conf():

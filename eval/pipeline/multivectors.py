@@ -1,6 +1,8 @@
 from functools import lru_cache
+import logging
 import pandas as pd
 from discoutils.thesaurus_loader import Vectors
+from eval.pipeline.bov import ThesaurusVectorizer
 
 
 class MultiVectors(Vectors):
@@ -48,3 +50,24 @@ class MultiVectors(Vectors):
         a = 1. + ddf.mean_rank.values
         ddf.mean_rank = 1 / a
         return list(zip(ddf.index, ddf.mean_rank) if len(ddf) else [])
+
+
+class KmeansVectorizer(ThesaurusVectorizer):
+    def fit_transform(self, raw_documents, y=None, clusters=None, **kwargs):
+        if clusters is None:
+            raise ValueError('Need a clusters file to fit this model')
+        self.clusters = clusters
+        return super().fit_transform(raw_documents, y=y)
+
+    def _process_single_feature(self, feature, j_indices, values, vocabulary):
+        try:
+            # insert cluster number of this features as its column number
+            cluster_id = self.clusters.ix[str(feature)][0]
+            feature_index_in_vocab = vocabulary['cluster%d' % cluster_id]
+            j_indices.append(feature_index_in_vocab)
+            values.append(1)
+        except KeyError:
+            # the feature is not contained in the distributional model, ignore it
+            pass
+        except IndexError:
+            logging.warning('IndexError for feature %r', feature)

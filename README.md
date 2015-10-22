@@ -6,6 +6,7 @@
 	
  - Python 3.2+ (legacy Python not supported)
  - standard Python scientific stack (`numpy`, `scipy`, `scikit-learn`, etc)
+ - our [utility library](https://github.com/mbatchkarov/DiscoUtils)
  - Stanford CoreNLP (tested with version `3.5.2` from 2015-04-20)
  - sample corpus of labelled documents located at `data/web`
  - pre-computed vectors for words and phrases of interest. This distribution includes randomly generated vectors, stored at `data/random_vectors.h5`
@@ -114,23 +115,23 @@ Results will appear in `conf/exp0.output`:
 
 - Non-distributional baseline
  
-	 - decode_token_handler = eval.plugins.bov_feature_handlers.BaseFeatureHandler
+	 - decode_token_handler = eval.pipeline.bov_feature_handlers.BaseFeatureHandler
 	 - must_be_in_thesaurus = False
 
 - Standard feature expansion
  
-	 - decode_token_handler = eval.plugins.bov_feature_handlers.SignifierSignifiedFeatureHandler
+	 - decode_token_handler = eval.pipeline.bov_feature_handlers.SignifierSignifiedFeatureHandler
 	 - must_be_in_thesaurus = False
 
 - Extreme feature expansion (EFE)
  
-	 - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
+	 - decode_token_handler = eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler
 	 - must_be_in_thesaurus = False
 	 - neighbours_file = data/random_vectors.h5 (something)
 
 - Non-compositional EFE
 
-	 - decode_token_handler = eval.plugins.bov_feature_handlers.SignifiedOnlyFeatureHandler
+	 - decode_token_handler = eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler
 	 - must_be_in_thesaurus = False
 	 - neighbours_file = data/random_vectors.h5 (something)
 	 - feature_extraction > train_time_opts > extract_unigram_features = J, N, V

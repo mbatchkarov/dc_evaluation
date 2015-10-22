@@ -1,7 +1,7 @@
 import pytest
 
 from discoutils.thesaurus_loader import Vectors
-from eval.plugins.multivectors import MultiVectors
+from eval.pipeline.multivectors import MultiVectors
 from tests.test_vector_sources import ones_vectors
 
 def test_multivectors(ones_vectors):

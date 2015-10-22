@@ -1,11 +1,11 @@
-import inspect
 import os
 import errno
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
-from eval.metrics import macroavg_prec, macroavg_f1, macroavg_rec, microavg_prec, microavg_rec, microavg_f1
-from eval.utils.reflection_utils import get_named_object
 import logging
+
+from sklearn.metrics import accuracy_score
 import numpy as np
+
+from eval.utils.metrics import macroavg_prec, macroavg_f1, macroavg_rec, microavg_prec, microavg_rec, microavg_f1
 
 
 def linear_compress(x):

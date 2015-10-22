@@ -20,10 +20,10 @@ from sklearn.pipeline import Pipeline
 
 from discoutils.misc import Bunch, mkdirs_if_not_exists
 from eval.utils.data_utils import get_pipeline_fit_args, get_tokenized_data, get_tokenizer_settings_from_conf
-from eval.classifiers import (LeaveNothingOut, PredefinedIndicesIterator,
+from eval.pipeline.classifiers import (LeaveNothingOut, PredefinedIndicesIterator,
                               SubsamplingPredefinedIndicesIterator, PicklingPipeline)
-from eval.composers.feature_selectors import MetadataStripper
-from eval.plugins.dumpers import FeatureVectorsCsvDumper
+from eval.pipeline.feature_selectors import MetadataStripper
+from eval.pipeline.dumpers import FeatureVectorsCsvDumper
 from eval.utils.conf_file_utils import parse_config_file
 from eval.utils.misc import multiple_scores, update_dict_according_to_mask
 from eval.utils.reflection_utils import get_named_object

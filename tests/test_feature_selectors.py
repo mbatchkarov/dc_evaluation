@@ -1,18 +1,19 @@
 from glob import glob
 import os
-from discoutils.thesaurus_loader import Vectors
+
 import numpy as np
 from sklearn.pipeline import Pipeline
 import numpy.testing as t
+
 from pandas.io.parsers import read_csv
 
-from eval.composers.feature_selectors import VectorBackedSelectKBest
-from eval.composers.vectorstore import *
-from eval.plugins.bov import ThesaurusVectorizer
-from eval.plugins.dumpers import FeatureVectorsCsvDumper
+from discoutils.thesaurus_loader import Vectors
+from eval.pipeline.feature_selectors import VectorBackedSelectKBest
+from eval.pipeline.thesauri import *
+from eval.pipeline.bov import ThesaurusVectorizer
+from eval.pipeline.dumpers import FeatureVectorsCsvDumper
 from eval.utils.data_utils import load_text_data_into_memory, tokenize_data
-from eval.plugins.tokenizers import XmlTokenizer
-
+from eval.pipeline.tokenizers import XmlTokenizer
 
 training_matrix_signifier_bigrams = np.array([[1., 1., 0., 0., 1., 0., 1., 0., 1., 0.],
                                               [1., 1., 0., 0., 1., 0., 1., 0., 1., 0.],
@@ -35,7 +36,7 @@ def _do_feature_selection(must_be_in_thesaurus, k, handler='Base', vector_source
     (feature vectors are made up), and does not know about n-grams. Optionally, another vector
     source can be passed in.
     """
-    handler_pattern = 'eval.plugins.bov_feature_handlers.{}FeatureHandler'
+    handler_pattern = 'eval.pipeline.bov_feature_handlers.{}FeatureHandler'
     raw_data, data_ids = load_text_data_into_memory(
         training_path='eval/resources/test-tr',
         test_path='eval/resources/test-ev',

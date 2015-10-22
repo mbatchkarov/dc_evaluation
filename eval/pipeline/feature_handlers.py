@@ -4,10 +4,15 @@ from eval.utils.reflection_utils import get_named_object
 
 
 def get_token_handler(handler_name, k, transformer_name, thesaurus):
-    # k- parameter for _paraphrase
-    # sim_transformer- callable that transforms the raw sim scores in
-    # _paraphrase
-    # todo replace k with a named object
+    """
+
+    :param handler_name: fully qualified name of the handler class. Must implement the BaseFeatureHandler interface
+    :param k: if the handler maker replacements, how many neighbours to insert for each replaced feature
+    :param transformer_name: fully qualified function name of the function (float -> float) that transforms the
+    similarity score between a feature and its replacements.
+    :param thesaurus: source of vectors or neighbours used to make replacements
+    :return:
+    """
     handler = get_named_object(handler_name)
     transformer = get_named_object(transformer_name)
     return handler(k, transformer, thesaurus)
@@ -15,7 +20,17 @@ def get_token_handler(handler_name, k, transformer_name, thesaurus):
 
 class BaseFeatureHandler():
     """
-    Handles features the way standard Naive Bayes does:
+    Base class for all feature handlers. This is used during document vectorisation and decides what to do with each
+    newly encountered document features. Currently the options are:
+      - ignore it. This is the standard test-time behaviour of `CountVectorizer` for out-of-vocabulary features.
+      - enter it into the vocabulary and increment the corresponding column in the document vector. This is the default
+      train-time behaviour of `CountVectorizer`
+      - replace it with other features according to a distributional model.
+
+    The decision is based on whether the feature is in the current model vocabulary (IV) or not (OOV), and whether
+    it is in the distributional model (IT) or not (OOT).
+
+    This class does standard CountVectorizer-like vectorization:
         - in vocabulary, in thesaurus: only insert feature itself
         - IV,OOT: feature itself
         - OOV, IT: ignore feature
@@ -87,6 +102,7 @@ class SignifierSignifiedFeatureHandler(BaseFeatureHandler):
     Handles features the way standard Naive Bayes does, except
         - OOV, IT: insert the first K IV neighbours from thesaurus instead of
         ignoring the feature
+    This is standard feature expansion from the IR literature.
     """
 
     def __init__(self, k, sim_transformer, thesaurus):
@@ -101,7 +117,8 @@ class SignifierSignifiedFeatureHandler(BaseFeatureHandler):
 class SignifiedOnlyFeatureHandler(BaseFeatureHandler):
     """
     Ignores all OOT features and inserts the first K IV neighbours from
-    thesaurus for all IT features
+    thesaurus for all IT features. This is what I called Extreme Feature Expansion
+    in my thesis
     """
 
     def __init__(self, k, sim_transformer, thesaurus):
@@ -120,7 +137,7 @@ class SignifiedOnlyFeatureHandler(BaseFeatureHandler):
 
 class SignifierRandomBaselineFeatureHandler(SignifiedOnlyFeatureHandler):
     """
-    Ignores all OOT features and inserts K random IV tokens for all IT features
+    Ignores all OOT features and inserts K random IV tokens for all IT features. Useful to unit tests.
     """
 
     def __init__(self, k, sim_transformer, thesaurus):

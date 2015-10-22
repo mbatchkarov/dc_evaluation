@@ -1,9 +1,9 @@
 import pytest
 import networkx as nx
-
-from eval.pipeline.bov import ThesaurusVectorizer
-from eval.pipeline.tokenizers import XmlTokenizer
 from discoutils.tokens import DocumentFeature, Token
+
+from eval.pipeline.feature_extractors import FeatureExtractor
+from eval.pipeline.tokenizers import XmlTokenizer
 
 
 @pytest.fixture
@@ -12,14 +12,9 @@ def valid_AN_features():
 
 
 @pytest.fixture
-def vectorizer():
-    v = ThesaurusVectorizer(train_time_opts={'extract_unigram_features': 'J,N',
-                                             'extract_phrase_features': ['AN', 'NN', 'VO', 'SVO']},
-                            decode_time_opts={'extract_unigram_features': '',
-                                              'extract_phrase_features': ['AN', 'NN']})
-    # need to fit it as some fields are only initialised then. what a good call on my part, eh?
-    v.fit_transform([], [])
-    return v
+def extractor():
+    return FeatureExtractor(extract_unigram_features='J,N',
+                            extract_phrase_features=['AN', 'NN', 'VO', 'SVO'])
 
 
 @pytest.fixture
@@ -32,51 +27,51 @@ def black_cat_parse_tree():
     return parse_tree
 
 
-def test_extract_features_from_correct_dependency_tree(black_cat_parse_tree, vectorizer, valid_AN_features):
-    features = vectorizer.extract_features_from_dependency_tree(black_cat_parse_tree)
+def test_extract_features_from_correct_dependency_tree(black_cat_parse_tree, extractor, valid_AN_features):
+    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
 
     for adj, noun in valid_AN_features:
         f = DocumentFeature('AN', (Token(adj, 'J'), Token(noun, 'N')))
         assert f in features
 
-    assert DocumentFeature('VO', (Token('eat', 'V'), Token('bird', 'N') )) in features
-    assert DocumentFeature('SVO', (Token('cat', 'N'), Token('eat', 'V'), Token('bird', 'N') )) \
+    assert DocumentFeature('VO', (Token('eat', 'V'), Token('bird', 'N'))) in features
+    assert DocumentFeature('SVO', (Token('cat', 'N'), Token('eat', 'V'), Token('bird', 'N'))) \
            in features
 
     assert DocumentFeature('NN', (Token('heart', 'N'), Token('surgery', 'N'))) in features
 
 
-def test_extract_features_with_disabled_features(black_cat_parse_tree, vectorizer, valid_AN_features):
-    vectorizer.extract_phrase_features = ['AN', 'NN']
+def test_extract_features_with_disabled_features(black_cat_parse_tree, extractor, valid_AN_features):
+    extractor.extract_phrase_features = ['AN', 'NN']
 
-    features = vectorizer.extract_features_from_dependency_tree(black_cat_parse_tree)
+    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
 
     for adj, noun in valid_AN_features:
         f = DocumentFeature('AN', (Token(adj, 'J'), Token(noun, 'N')))
         assert f in features
 
-    assert DocumentFeature('VO', (Token('eat', 'V'), Token('bird', 'N') )) not in features
-    assert DocumentFeature('SVO', (Token('cat', 'N'), Token('eat', 'V'), Token('bird', 'N') )) \
+    assert DocumentFeature('VO', (Token('eat', 'V'), Token('bird', 'N'))) not in features
+    assert DocumentFeature('SVO', (Token('cat', 'N'), Token('eat', 'V'), Token('bird', 'N'))) \
            not in features
 
-    assert DocumentFeature('NN', (Token('heart', 'N'), Token('surgery', 'N') )) in features
+    assert DocumentFeature('NN', (Token('heart', 'N'), Token('surgery', 'N'))) in features
 
 
-def test_extract_features_from_empty_dependency_tree(vectorizer):
-    features = vectorizer.extract_features_from_dependency_tree(nx.DiGraph())
+def test_extract_features_from_empty_dependency_tree(extractor):
+    features = extractor.extract_features_from_dependency_tree(nx.DiGraph())
     assert not features
 
 
-def test_remove_features_containing_named_entities(vectorizer, black_cat_parse_tree):
-    features = vectorizer.extract_features_from_dependency_tree(black_cat_parse_tree)
+def test_remove_features_containing_named_entities(extractor, black_cat_parse_tree):
+    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
 
-    cleaned_features = vectorizer._remove_features_containing_named_entities(features)
+    cleaned_features = extractor.remove_features_containing_named_entities(features)
     assert cleaned_features == features
 
 
     # make the token cat/N into a named entity
     features[0].tokens[1].ner = 'PERSON'
-    cleaned_features = vectorizer._remove_features_containing_named_entities(features)
+    cleaned_features = extractor.remove_features_containing_named_entities(features)
     assert len(cleaned_features) == len(features) - 4  # 4 features contain the Token 'cat/N'
 
 
@@ -90,7 +85,7 @@ def test_remove_features_containing_named_entities(vectorizer, black_cat_parse_t
     ]
 )
 def test_extract_features_from_dependency_tree_with_wrong_relation_types(black_cat_parse_tree,
-                                                                         vectorizer,
+                                                                         extractor,
                                                                          change_to,
                                                                          expected_feature_count,
                                                                          valid_AN_features):
@@ -102,7 +97,7 @@ def test_extract_features_from_dependency_tree_with_wrong_relation_types(black_c
     for source, target, data in black_cat_parse_tree.edges(data=True):
         print(data)
 
-    features = vectorizer.extract_features_from_dependency_tree(black_cat_parse_tree)
+    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
     # if all relations are changed to AMOD, we should get two adjective per noun
     # if all relations are changed to NSUBJ, we should get no AN/VO/SVO features as we're missing the required relations
     # to build and AN feature, we need an AMOD relation between a J and a N
@@ -116,8 +111,8 @@ def test_extract_features_from_dependency_tree_with_wrong_relation_types(black_c
         assert (f in features) == (change_to == 'amod')
 
     ## check that no VO/SVO features are extracted
-    feature = DocumentFeature('VO', (Token('eat', 'V'), Token('bird', 'N') ))
+    feature = DocumentFeature('VO', (Token('eat', 'V'), Token('bird', 'N')))
     assert (feature in features) == (change_to == 'dobj')
 
-    feature = DocumentFeature('SVO', (Token('cat', 'N'), Token('eat', 'V'), Token('bird', 'N') ))
+    feature = DocumentFeature('SVO', (Token('cat', 'N'), Token('eat', 'V'), Token('bird', 'N')))
     assert feature not in features  # we're missing the required relations to build SVO

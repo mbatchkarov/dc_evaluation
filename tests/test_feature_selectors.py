@@ -36,7 +36,7 @@ def _do_feature_selection(must_be_in_thesaurus, k, handler='Base', vector_source
     (feature vectors are made up), and does not know about n-grams. Optionally, another vector
     source can be passed in.
     """
-    handler_pattern = 'eval.pipeline.bov_feature_handlers.{}FeatureHandler'
+    handler_pattern = 'eval.pipeline.feature_handlers.{}FeatureHandler'
     raw_data, data_ids = load_text_data_into_memory(
         training_path='eval/resources/test-tr',
         test_path='eval/resources/test-ev',

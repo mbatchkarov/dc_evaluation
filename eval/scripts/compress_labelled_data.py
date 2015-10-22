@@ -4,6 +4,7 @@ import sys
 from discoutils.tokens import DocumentFeature
 
 from discoutils.misc import mkdirs_if_not_exists
+from eval.pipeline.feature_extractors import FeatureExtractor
 
 sys.path.append('.')
 import json
@@ -12,7 +13,6 @@ import argparse
 import logging
 from joblib import Parallel, delayed
 from eval.utils.data_utils import get_all_corpora, get_tokenizer_settings_from_conf_file, get_tokenized_data
-from eval.pipeline.bov import ThesaurusVectorizer
 from eval.evaluate import is_valid_file
 
 ROOT = 'features_in_labelled'
@@ -148,14 +148,11 @@ def jsonify_single_labelled_corpus(corpus_name, corpus_path,
     """
 
     def _write_corpus_to_json(x_tr, y_tr):
-        vect = ThesaurusVectorizer(min_df=1,
-                                   train_time_opts={'extract_unigram_features': unigram_features,
-                                                    'extract_phrase_features': phrase_features})
-        vect.extract_unigram_features = vect.train_time_opts['extract_unigram_features']
-        vect.extract_phrase_features = vect.train_time_opts['extract_phrase_features']
+        extr = FeatureExtractor(extract_unigram_features=unigram_features,
+                                extract_phrase_features=phrase_features)
         documents = []
         for doc in x_tr:
-            documents.append([str(f) for f in vect.extract_features_from_token_list(doc)])
+            documents.append([str(f) for f in extr.extract_features_from_token_list(doc)])
 
         for document, label in zip(documents, y_tr):
             outfile.write(bytes(json.dumps([label, document]), 'UTF8'))

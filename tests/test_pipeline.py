@@ -48,8 +48,8 @@ def feature_extraction_conf():
         'lowercase': False,
         'record_stats': True,
         'k': 10,  # use all thesaurus entries
-        'train_token_handler': 'eval.pipeline.bov_feature_handlers.BaseFeatureHandler',
-        'decode_token_handler': 'eval.pipeline.bov_feature_handlers.BaseFeatureHandler',
+        'train_token_handler': 'eval.pipeline.feature_handlers.BaseFeatureHandler',
+        'decode_token_handler': 'eval.pipeline.feature_handlers.BaseFeatureHandler',
         'train_time_opts': dict(extract_unigram_features=['J', 'N', 'V'],
                                 extract_phrase_features=[]),
         'decode_time_opts': dict(extract_unigram_features=['J', 'N', 'V'],
@@ -193,7 +193,7 @@ def test_baseline_use_all_features_with__signifier_signified(data, feature_extra
                                                              feature_selection_conf):
     feature_selection_conf['must_be_in_thesaurus'] = False
     feature_extraction_conf['decode_token_handler'] = \
-        'eval.pipeline.bov_feature_handlers.SignifierSignifiedFeatureHandler'
+        'eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler'
     feature_extraction_conf['k'] = 1
     tsv_file = 'eval/resources/exp0-0b.strings'
 
@@ -224,7 +224,7 @@ def test_baseline_ignore_nonthesaurus_features_with_signifier_signified(data, fe
                                                                         feature_selection_conf):
     feature_selection_conf['must_be_in_thesaurus'] = True
     feature_extraction_conf['decode_token_handler'] = \
-        'eval.pipeline.bov_feature_handlers.SignifierSignifiedFeatureHandler'
+        'eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler'
     feature_extraction_conf['k'] = 1
     tsv_file = 'eval/resources/exp0-0b.strings'
 
@@ -252,7 +252,7 @@ def test_baseline_ignore_nonthesaurus_features_with_signifier_signified(data, fe
 def test_baseline_use_all_features_with_signified(data, feature_extraction_conf, feature_selection_conf):
     feature_selection_conf['must_be_in_thesaurus'] = False
     feature_extraction_conf['decode_token_handler'] = \
-        'eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler'
+        'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
     feature_extraction_conf['k'] = 1  # equivalent to max
     tsv_file = 'eval/resources/exp0-0b.strings'
 
@@ -282,7 +282,7 @@ def test_baseline_use_all_features_with_signified(data, feature_extraction_conf,
 def test_baseline_ignore_nonthesaurus_features_with_signified(data, feature_extraction_conf, feature_selection_conf):
     feature_selection_conf['must_be_in_thesaurus'] = True
     feature_extraction_conf['decode_token_handler'] = \
-        'eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler'
+        'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
     feature_extraction_conf['k'] = 1  # equivalent to max
     tsv_file = 'eval/resources/exp0-0b.strings'
 
@@ -312,7 +312,7 @@ def test_baseline_ignore_nonthesaurus_features_with_signified(data, feature_extr
 def test_baseline_use_all_features_with_signified_random(data, feature_extraction_conf, feature_selection_conf):
     feature_selection_conf['must_be_in_thesaurus'] = False
     feature_extraction_conf['decode_token_handler'] = \
-        'eval.pipeline.bov_feature_handlers.SignifierRandomBaselineFeatureHandler'
+        'eval.pipeline.feature_handlers.SignifierRandomBaselineFeatureHandler'
     feature_extraction_conf['k'] = 1
     feature_extraction_conf['neighbour_source'] = \
         'eval.tests.test_main._get_constant_thesaurus'

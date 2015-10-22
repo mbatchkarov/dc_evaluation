@@ -10,7 +10,7 @@ from sklearn.base import TransformerMixin
 
 class FeatureVectorsCsvDumper(TransformerMixin):
     """
-    Saves the vectorized input to file for inspection
+    Saves the vectorized input (a term-document matrix) to file for inspection
     """
 
     def __init__(self, exp_name, cv_number=0, prefix='.'):

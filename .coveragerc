@@ -1,7 +1,7 @@
 [run]
 branch = True
-source = discoutils
-include = */discoutils/*
+source = eval
+include = tests/*
 omit =
-    */discoutils/tests/*
+    tests/*
     */setup.py

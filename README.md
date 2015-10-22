@@ -150,7 +150,7 @@ Results will appear in `conf/exp0.output`:
 
  ```
  cd ~/projects/dc_evaluation
- py.test eval/tests
+ py.test tests # OR python setup.py test OR runtests.py
  ```
 
 # TODO

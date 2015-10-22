@@ -2,10 +2,10 @@
 import glob
 import os
 
+import pytest
 import numpy as np
 from numpy.ma import std
 import numpy.testing as t
-import pytest
 import scipy.sparse as sp
 
 from discoutils.thesaurus_loader import Thesaurus
@@ -110,7 +110,11 @@ def _vectorize_data(data_paths, feature_selection_conf=feature_selection_conf(),
     return x1, x2, voc
 
 
-def tearDown():
+def teardown_module(module):
+    """
+    This is a pytest module-level teardown function
+    :param module:
+    """
     for pattern in ['PostVectDump_test_main*', 'stats-test_main-cv12345*']:
         files = glob.glob(pattern)
         for f in files:
@@ -128,8 +132,6 @@ def data(request):
     tr_path = '%s-tr' % prefix
     ev_path = '%s-ev' % prefix
 
-    request.addfinalizer(tearDown)
-
     if kind == 'xml':
         # return the raw corpus in XML
         return tr_path, ev_path
@@ -140,7 +142,7 @@ def data(request):
         return tr_path + '.gz', ev_path + '.gz'
 
 
-def test_baseline_use_all_features_signifier_only(data):
+def test_nondistributional_baseline_without_feature_selection(data):
     tsv_file = 'eval/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data, vector_source=tsv_file)
@@ -162,7 +164,7 @@ def test_baseline_use_all_features_signifier_only(data):
     )
 
 
-def test_baseline_ignore_nonthesaurus_features_signifier_only(data, feature_selection_conf):
+def test_use_thesaurus_ignore_nonthesaurus_features(data, feature_selection_conf):
     feature_selection_conf['must_be_in_thesaurus'] = True
     tsv_file = 'eval/resources/exp0-0b.strings'
 
@@ -172,7 +174,6 @@ def test_baseline_ignore_nonthesaurus_features_signifier_only(data, feature_sele
 
     assert pruned_vocab == strip(voc)
 
-    # assertIsInstance(x1, sp.spmatrix)
     t.assert_array_equal(
         x1.toarray(),
         pruned_training_matrix
@@ -193,7 +194,7 @@ def test_baseline_use_all_features_with__signifier_signified(data, feature_extra
     feature_selection_conf['must_be_in_thesaurus'] = False
     feature_extraction_conf['decode_token_handler'] = \
         'eval.pipeline.bov_feature_handlers.SignifierSignifiedFeatureHandler'
-    feature_extraction_conf['k'] = 1  # equivalent to max
+    feature_extraction_conf['k'] = 1
     tsv_file = 'eval/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data,

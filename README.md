@@ -1,4 +1,6 @@
 # Evaluation via document classification
+[![Build Status](https://travis-ci.org/mbatchkarov/dc_evaluation.svg?branch=master)](https://travis-ci.org/mbatchkarov/dc_evaluation)
+[![Coverage Status](https://coveralls.io/repos/mbatchkarov/dc_evaluation/badge.svg?branch=master&service=github)](https://coveralls.io/github/mbatchkarov/dc_evaluation?branch=master)
 
 ## Prerequisites
 	

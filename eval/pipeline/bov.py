@@ -185,24 +185,20 @@ class ThesaurusVectorizer(TfidfVectorizer):
             logging.info('NN cache info: %s', self.thesaurus.get_nearest_neighbours.cache_info())
         return X, self.vocabulary_
 
-    def build_analyzer(self):
+    def _extract_or_filter(self, thing):
         """
-        Return a callable that handles preprocessing,
-        tokenization and any additional feature extraction.
+        Extract feature from a document. The document can be:
+          - a list of sentences, each stored as a dependency parse tree, in which case features are extracted online.
+            This can be a little slow.
+          - a very broad list of pre-extracted features (list of str), which are just filtered. This is faster.
         """
-        if hasattr(self.analyzer, '__call__'):
-            return self.analyzer
-
-        def _extract_or_filter(thing):
-            if isinstance(thing[0], str):
-                # assume input already feature-extracted
-                return self.feature_extractor.filter_preextracted_features(thing)
-            if isinstance(thing[0], nx.DiGraph):
-                # assume input tokenized, but features have not been extracted
-                # corpora used in unit tests are like this
-                return self.feature_extractor.extract_features_from_token_list(thing)
-
-        return _extract_or_filter
+        if isinstance(thing[0], str):
+            # assume input already feature-extracted
+            return self.feature_extractor.filter_preextracted_features(thing)
+        if isinstance(thing[0], nx.DiGraph):
+            # assume input tokenized, but features have not been extracted
+            # corpora used in unit tests are like this
+            return self.feature_extractor.extract_features_from_tree_list(thing)
 
     def _count_vocab(self, raw_documents, fixed_vocab):
         """
@@ -224,7 +220,6 @@ class ThesaurusVectorizer(TfidfVectorizer):
             vocabulary = defaultdict(None)
             vocabulary.default_factory = vocabulary.__len__
 
-        analyze = self.build_analyzer()
         j_indices = array.array(str("i"))
         indptr = array.array(str("i"))
         values = []
@@ -232,7 +227,7 @@ class ThesaurusVectorizer(TfidfVectorizer):
         for doc_id, doc in enumerate(raw_documents):
             if doc_id % 1000 == 0:
                 logging.info('Done %d/%d documents...', doc_id, len(raw_documents))
-            for feature in analyze(doc):
+            for feature in self._extract_or_filter(doc):
                 # ####################  begin non-original code  #####################
                 self._process_single_feature(feature, j_indices, values, vocabulary)
             indptr.append(len(j_indices))

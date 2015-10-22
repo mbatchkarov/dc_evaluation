@@ -14,12 +14,13 @@ class FeatureExtractor(object):
         self.extract_unigram_features = extract_unigram_features
         self.standard_ngram_features = standard_ngram_features
 
-        self.entity_ner_tags = {'ORGANIZATION', 'PERSON', 'LOCATION'}
-
     def update(self, **kwargs):
         self.__dict__.update(**kwargs)
 
-    def extract_features_from_dependency_tree(self, parse_tree):
+    def extract_features_from_single_dependency_tree(self, parse_tree):
+        """
+        Turn a document (a dependency parse tree stored as a networkx.DiGraph) into a sequence of features.
+        """
         new_features = []
 
         # extract sentence-internal adjective-noun compounds
@@ -58,27 +59,22 @@ class FeatureExtractor(object):
                     new_features.append(DocumentFeature('NN', (dep, head)))
 
         if self.remove_features_with_NER:
-            return self._remove_features_containing_named_entities(new_features)
+            return self.remove_features_containing_named_entities(new_features)
         return new_features
 
-    def extract_features_from_token_list(self, doc_sentences):
+    def extract_features_from_tree_list(self, doc_sentences):
         """
-        Turn a document( a list of tokens) into a sequence of features.
+        Turn a document (a list of sentences, each stored as a parse tree) into a sequence of features. Can extract
+        features from the dependency trees (e.g. noun phrases) or traditional n-gram features.
         """
         features = []
 
         # extract sentence-internal token n-grams
-
         for parse_tree in doc_sentences:
             if not parse_tree:  # the sentence segmenter sometimes returns empty sentences
                 continue
 
-            if parse_tree:
-                features.extend(self.extract_features_from_dependency_tree(parse_tree))
-            else:
-                # sometimes an input document will have a sentence of one word, which has no dependencies
-                # just ignore that and extract all the features that can be extracted without it
-                logging.warning('Dependency tree not available')
+            features.extend(self.extract_features_from_single_dependency_tree(parse_tree))
 
             # extract sentence-internal n-grams of the right PoS tag
             if self.extract_unigram_features:
@@ -97,6 +93,7 @@ class FeatureExtractor(object):
                     for i in range(n_tokens - n + 1):
                         feature = DocumentFeature('%d-GRAM' % n, tuple(sentence[i: i + n]))
                         features.append(feature)
+
         # it doesn't matter where in the sentence/document these features were found
         # erase their index
         for feature in features:
@@ -109,6 +106,13 @@ class FeatureExtractor(object):
         return [f for f in features if DocumentFeature.from_string(str(f)).type != 'EMPTY']
 
     def filter_preextracted_features(self, feature_list):
+        """
+        Takes a list of features and keeps only those mentioned in the constructor parameters. This is a minor
+        optimisation- extraction is a little slow, so we can just extract tons of features in advance and then just
+        filter them dynamically for each experiment
+        :param feature_list:
+        :return:
+        """
         res = []
         for feat_str in feature_list:
             feat = DocumentFeature.from_string(feat_str)
@@ -123,4 +127,5 @@ class FeatureExtractor(object):
         return res
 
     def remove_features_containing_named_entities(self, features):
-        return [f for f in features if not any(token.ner in self.entity_ner_tags for token in f.tokens)]
+        entity_ner_tags = {'ORGANIZATION', 'PERSON', 'LOCATION'}
+        return [f for f in features if not any(token.ner in entity_ner_tags for token in f.tokens)]

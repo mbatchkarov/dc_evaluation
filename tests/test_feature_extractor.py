@@ -28,7 +28,7 @@ def black_cat_parse_tree():
 
 
 def test_extract_features_from_correct_dependency_tree(black_cat_parse_tree, extractor, valid_AN_features):
-    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
+    features = extractor.extract_features_from_single_dependency_tree(black_cat_parse_tree)
 
     for adj, noun in valid_AN_features:
         f = DocumentFeature('AN', (Token(adj, 'J'), Token(noun, 'N')))
@@ -44,7 +44,7 @@ def test_extract_features_from_correct_dependency_tree(black_cat_parse_tree, ext
 def test_extract_features_with_disabled_features(black_cat_parse_tree, extractor, valid_AN_features):
     extractor.extract_phrase_features = ['AN', 'NN']
 
-    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
+    features = extractor.extract_features_from_single_dependency_tree(black_cat_parse_tree)
 
     for adj, noun in valid_AN_features:
         f = DocumentFeature('AN', (Token(adj, 'J'), Token(noun, 'N')))
@@ -58,16 +58,18 @@ def test_extract_features_with_disabled_features(black_cat_parse_tree, extractor
 
 
 def test_extract_features_from_empty_dependency_tree(extractor):
-    features = extractor.extract_features_from_dependency_tree(nx.DiGraph())
+    features = extractor.extract_features_from_single_dependency_tree(nx.DiGraph())
+    assert not features
+
+    features = extractor.extract_features_from_tree_list([nx.DiGraph()])
     assert not features
 
 
 def test_remove_features_containing_named_entities(extractor, black_cat_parse_tree):
-    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
+    features = extractor.extract_features_from_single_dependency_tree(black_cat_parse_tree)
 
     cleaned_features = extractor.remove_features_containing_named_entities(features)
     assert cleaned_features == features
-
 
     # make the token cat/N into a named entity
     features[0].tokens[1].ner = 'PERSON'
@@ -75,7 +77,6 @@ def test_remove_features_containing_named_entities(extractor, black_cat_parse_tr
     assert len(cleaned_features) == len(features) - 4  # 4 features contain the Token 'cat/N'
 
 
-# @pytest.skip('Some dependency features manually disabled for performance reasons')
 @pytest.mark.parametrize(
     ('change_to', 'expected_feature_count'),
     [
@@ -97,7 +98,7 @@ def test_extract_features_from_dependency_tree_with_wrong_relation_types(black_c
     for source, target, data in black_cat_parse_tree.edges(data=True):
         print(data)
 
-    features = extractor.extract_features_from_dependency_tree(black_cat_parse_tree)
+    features = extractor.extract_features_from_single_dependency_tree(black_cat_parse_tree)
     # if all relations are changed to AMOD, we should get two adjective per noun
     # if all relations are changed to NSUBJ, we should get no AN/VO/SVO features as we're missing the required relations
     # to build and AN feature, we need an AMOD relation between a J and a N
@@ -110,7 +111,7 @@ def test_extract_features_from_dependency_tree_with_wrong_relation_types(black_c
         f = DocumentFeature('AN', (Token(adj, 'J'), Token(noun, 'N')))
         assert (f in features) == (change_to == 'amod')
 
-    ## check that no VO/SVO features are extracted
+    # check that no VO/SVO features are extracted
     feature = DocumentFeature('VO', (Token('eat', 'V'), Token('bird', 'N')))
     assert (feature in features) == (change_to == 'dobj')
 

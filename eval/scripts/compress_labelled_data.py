@@ -152,7 +152,7 @@ def jsonify_single_labelled_corpus(corpus_name, corpus_path,
                                 extract_phrase_features=phrase_features)
         documents = []
         for doc in x_tr:
-            documents.append([str(f) for f in extr.extract_features_from_token_list(doc)])
+            documents.append([str(f) for f in extr.extract_features_from_tree_list(doc)])
 
         for document, label in zip(documents, y_tr):
             outfile.write(bytes(json.dumps([label, document]), 'UTF8'))

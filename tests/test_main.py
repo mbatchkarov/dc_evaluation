@@ -1,17 +1,18 @@
 # coding=utf-8
 import glob
 import os
+
 import numpy as np
 from numpy.ma import std
 import numpy.testing as t
 import pytest
 import scipy.sparse as sp
+
 from discoutils.thesaurus_loader import Thesaurus
 from eval.composers.vectorstore import DummyThesaurus
-
 from eval import evaluate
 from eval.scripts.compress_labelled_data import jsonify_single_labelled_corpus
-from eval.tests.test_feature_selectors import strip
+from tests.test_feature_selectors import strip
 from eval.utils.data_utils import get_tokenized_data
 
 tokenizer_opts = {

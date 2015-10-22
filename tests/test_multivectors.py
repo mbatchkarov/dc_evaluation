@@ -1,8 +1,8 @@
 import pytest
+
 from discoutils.thesaurus_loader import Vectors
 from eval.plugins.multivectors import MultiVectors
-from eval.tests.test_vector_sources import ones_vectors
-
+from tests.test_vector_sources import ones_vectors
 
 def test_multivectors(ones_vectors):
     assert len(ones_vectors) == 4

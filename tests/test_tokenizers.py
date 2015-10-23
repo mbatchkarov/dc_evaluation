@@ -27,14 +27,14 @@ class Test_tokenizer(TestCase):
         for key, val in self.params.items():
             setattr(self.tokenizer, key, val)
 
-        with open('eval/resources/test-tr/earn/earn_1.tagged') \
+        with open('tests/resources/test-tr/earn/earn_1.tagged') \
                 as infile:
             self.doc = infile.read()
-        with open('eval/resources/test-ev/earn/earn_2.tagged') \
+        with open('tests/resources/test-ev/earn/earn_2.tagged') \
                 as infile:
             self.other_doc = infile.read()
 
-        with open('eval/resources/tokenizer/invalid_tokens.tagged') \
+        with open('tests/resources/tokenizer/invalid_tokens.tagged') \
                 as infile:
             self.invalid_doc = infile.read()
 
@@ -88,7 +88,7 @@ class Test_tokenizer(TestCase):
         self.tokenizer = XmlTokenizer(**self.params)
         self.tokenizer.remove_stopwords = True
 
-        with open('eval/resources/earn_1-with-deps.tagged') as infile:
+        with open('tests/resources/earn_1-with-deps.tagged') as infile:
             doc = infile.read()
 
         dep_tree = self.tokenizer.tokenize_doc(doc)[0]

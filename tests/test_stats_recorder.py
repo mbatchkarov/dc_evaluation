@@ -25,9 +25,9 @@ def _get_counter_ignoring_negatives(df, column_list):
 @pytest.fixture(scope="module")
 def stats_files(request):
     # load a mock unigram thesaurus, bypassing the similarity calculation provided by CompositeVectorSource
-    vector_source = Thesaurus.from_tsv('eval/resources/exp0-0a.strings')
+    vector_source = Thesaurus.from_tsv('tests/resources/exp0-0a.strings')
     # exp1 is like exp0, but using Signified encoding
-    conf, _ = parse_config_file('eval/resources/conf/exp1/exp1.conf')
+    conf, _ = parse_config_file('tests/resources/conf/exp1/exp1.conf')
     run_experiment(conf, thesaurus=vector_source)
 
     # setup goes like this:

@@ -128,7 +128,7 @@ def data(request):
     Returns path to a labelled dataset on disk
     """
     kind = request.param
-    prefix = 'eval/resources/test-baseline'
+    prefix = 'tests/resources/test-baseline'
     tr_path = '%s-tr' % prefix
     ev_path = '%s-ev' % prefix
 
@@ -143,7 +143,7 @@ def data(request):
 
 
 def test_nondistributional_baseline_without_feature_selection(data):
-    tsv_file = 'eval/resources/exp0-0b.strings'
+    tsv_file = 'tests/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data, vector_source=tsv_file)
     assert full_vocab == strip(voc)
@@ -166,7 +166,7 @@ def test_nondistributional_baseline_without_feature_selection(data):
 
 def test_use_thesaurus_ignore_nonthesaurus_features(data, feature_selection_conf):
     feature_selection_conf['must_be_in_thesaurus'] = True
-    tsv_file = 'eval/resources/exp0-0b.strings'
+    tsv_file = 'tests/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data,
                                   feature_selection_conf=feature_selection_conf,
@@ -195,7 +195,7 @@ def test_baseline_use_all_features_with__signifier_signified(data, feature_extra
     feature_extraction_conf['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler'
     feature_extraction_conf['k'] = 1
-    tsv_file = 'eval/resources/exp0-0b.strings'
+    tsv_file = 'tests/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data,
                                   feature_extraction_conf=feature_extraction_conf,
@@ -226,7 +226,7 @@ def test_baseline_ignore_nonthesaurus_features_with_signifier_signified(data, fe
     feature_extraction_conf['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler'
     feature_extraction_conf['k'] = 1
-    tsv_file = 'eval/resources/exp0-0b.strings'
+    tsv_file = 'tests/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data,
                                   feature_extraction_conf=feature_extraction_conf,
@@ -254,7 +254,7 @@ def test_baseline_use_all_features_with_signified(data, feature_extraction_conf,
     feature_extraction_conf['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
     feature_extraction_conf['k'] = 1  # equivalent to max
-    tsv_file = 'eval/resources/exp0-0b.strings'
+    tsv_file = 'tests/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data,
                                   feature_extraction_conf=feature_extraction_conf,
@@ -284,7 +284,7 @@ def test_baseline_ignore_nonthesaurus_features_with_signified(data, feature_extr
     feature_extraction_conf['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
     feature_extraction_conf['k'] = 1  # equivalent to max
-    tsv_file = 'eval/resources/exp0-0b.strings'
+    tsv_file = 'tests/resources/exp0-0b.strings'
 
     x1, x2, voc = _vectorize_data(data,
                                   feature_extraction_conf=feature_extraction_conf,

@@ -10,7 +10,7 @@ from eval.utils.conf_file_utils import parse_config_file
 
 
 def test_jsonify_XML_corpus():
-    conf_file = 'eval/resources/conf/exp0/exp0.conf'
+    conf_file = 'tests/resources/conf/exp0/exp0.conf'
     conf, _ = parse_config_file(conf_file)
     train_set = conf['training_data']
     json_train_set = train_set + '.gz'
@@ -41,8 +41,8 @@ def test_get_pipeline_fit_args():
             'random_neighbour_thesaurus': False,
         },
         'vector_sources': {
-            'neighbours_file': ['eval/resources/twos.vectors.txt'],
-            'entries_of': 'eval/resources/ones.vectors.txt',
+            'neighbours_file': ['tests/resources/twos.vectors.txt'],
+            'entries_of': 'tests/resources/ones.vectors.txt',
             'clusters_file': ''
         }
     }

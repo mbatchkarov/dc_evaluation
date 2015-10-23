@@ -38,7 +38,7 @@ def corpus_small():
 
 @pytest.fixture
 def clusters(tmpdir):
-    vector_path = 'eval/resources/twos.vectors.txt'
+    vector_path = 'tests/resources/twos.vectors.txt'
     put_path = str(tmpdir.join('clusters_unit_test.hdf'))
     cluster_vectors(vector_path, put_path, n_clusters=4, n_jobs=1)
 

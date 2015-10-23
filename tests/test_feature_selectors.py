@@ -38,15 +38,15 @@ def _do_feature_selection(must_be_in_thesaurus, k, handler='Base', vector_source
     """
     handler_pattern = 'eval.pipeline.feature_handlers.{}FeatureHandler'
     raw_data, data_ids = load_text_data_into_memory(
-        training_path='eval/resources/test-tr',
-        test_path='eval/resources/test-ev',
+        training_path='tests/resources/test-tr',
+        test_path='tests/resources/test-ev',
     )
 
     tokenizer = XmlTokenizer()
     x_train, y_train, x_test, y_test = tokenize_data(raw_data, tokenizer, data_ids)
 
     if vector_source == 'default':
-        unigrams_vect = Vectors.from_tsv('eval/resources/thesauri/exp0-0a.txt.events-unfiltered.strings')
+        unigrams_vect = Vectors.from_tsv('tests/resources/thesauri/exp0-0a.txt.events-unfiltered.strings')
         vector_source = unigrams_vect
 
     if delete_kid:
@@ -264,7 +264,7 @@ def test_bigram_features_with_composer_without_fs():
     """
 
     # load a mock unigram thesaurus, bypassing the similarity calculation provided by CompositeVectorSource
-    unigrams = Thesaurus.from_tsv('eval/resources/exp0-0a.strings', immutable=False)
+    unigrams = Thesaurus.from_tsv('tests/resources/exp0-0a.strings', immutable=False)
 
     # patch it to ensure it contains some bigram entries, as if they were calculated on the fly
     unigrams['like/V_fruit/N'] = [('like/V', 0.8)]

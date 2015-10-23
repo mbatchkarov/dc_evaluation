@@ -15,8 +15,8 @@ base_handler = 'eval.pipeline.feature_handlers.BaseFeatureHandler'
 hybrid_handler = 'eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler'
 extreme_handler = 'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
 
-conf_file = 'eval/resources/conf/exp0/exp0.conf'
-output_file = 'eval/resources/conf/exp0/output/tests-exp0.scores.csv'
+conf_file = 'tests/resources/conf/exp0/exp0.conf'
+output_file = 'tests/resources/conf/exp0/output/tests-exp0.scores.csv'
 
 
 @pytest.fixture

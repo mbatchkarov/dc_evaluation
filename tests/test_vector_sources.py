@@ -16,22 +16,22 @@ all_features = set([unigram_feature, bigram_feature, an_feature, unk_unigram_fea
 
 @pytest.fixture(scope='module')
 def small_vectors():
-    return Vectors.from_tsv('eval/resources/thesauri/small.txt.events.strings')
+    return Vectors.from_tsv('tests/resources/thesauri/small.txt.events.strings')
 
 
 @pytest.fixture
 def vectors_a():
-    return Vectors.from_tsv('eval/resources/exp0-0a.strings')
+    return Vectors.from_tsv('tests/resources/exp0-0a.strings')
 
 
 @pytest.fixture
 def ones_vectors():
-    return Vectors.from_tsv('eval/resources/ones.vectors.txt')
+    return Vectors.from_tsv('tests/resources/ones.vectors.txt')
 
 
 @pytest.fixture
 def ones_vectors_no_pos():
-    return Vectors.from_tsv('eval/resources/ones.vectors.nopos.txt',
+    return Vectors.from_tsv('tests/resources/ones.vectors.nopos.txt',
                             enforce_word_entry_pos_format=False)
 
 

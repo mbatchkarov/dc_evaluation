@@ -25,7 +25,7 @@ def test_multivectors(ones_vectors):
 @pytest.mark.parametrize("call_init", [True, False])
 def test_all_neighbours_overlap(call_init):
     FEATURE = 'daily/J_pais/N'
-    v = Vectors.from_tsv('eval/resources/only_overlapping.txt', allow_lexical_overlap=False)
+    v = Vectors.from_tsv('tests/resources/only_overlapping.txt', allow_lexical_overlap=False)
     mv = MultiVectors([v] * 3)
     if call_init:
         mv.init_sims()

@@ -19,7 +19,7 @@ def extractor():
 
 @pytest.fixture
 def black_cat_parse_tree():
-    with open('eval/resources/tokenizer/black_cat.tagged') as infile:
+    with open('tests/resources/tokenizer/black_cat.tagged') as infile:
         txt = infile.read()
     t = XmlTokenizer()
     parse_tree = t.tokenize_doc(txt)[0]

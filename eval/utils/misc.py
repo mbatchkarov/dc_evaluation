@@ -111,18 +111,3 @@ def update_dict_according_to_mask(v, mask):
     new_indices = {old_index: new_index for new_index, old_index in enumerate(sorted(v.values()))}
     # update indices in vocabulary
     return {feature: new_indices[index] for feature, index in v.items()}
-
-
-def force_symlink(existing_file, link_name):
-    """
-    Created a symlink. If `link_name` exists it is deleted first. Take care!
-    :raise e:
-    """
-    try:
-        os.symlink(existing_file, link_name)
-    except OSError as e:
-        if e.errno == errno.EEXIST:
-            os.remove(link_name)
-            os.symlink(existing_file, link_name)
-        else:
-            raise e

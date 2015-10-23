@@ -57,7 +57,7 @@ class KmeansVectorizer(ThesaurusVectorizer):
         if clusters is None:
             raise ValueError('Need a clusters file to fit this model')
         self.clusters = clusters
-        return super().fit_transform(raw_documents, y=y)
+        return super().fit_transform(raw_documents, y=y, **kwargs)
 
     def _process_single_feature(self, feature, j_indices, values, vocabulary):
         try:

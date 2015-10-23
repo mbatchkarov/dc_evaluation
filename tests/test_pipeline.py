@@ -81,7 +81,7 @@ def _vectorize_data(data_paths, feature_selection_conf=feature_selection_conf(),
             'feature_extraction': feature_extraction_conf,
             'vector_sources': {'neighbour_strategy': 'linear'},
             'name': 'test_main',
-            'debug': True,
+            'debug_level': 2,
             'output_dir': '.'}
     feature_selection_conf['thesaurus'] = vector_source
     pipeline, fit_params = evaluate._build_pipeline(

@@ -25,13 +25,13 @@ class ThesaurusVectorizer(TfidfVectorizer):
     def __init__(self, lowercase=True,
                  input='content', encoding='utf-8', decode_error='strict',
                  strip_accents=None,
-                 preprocessor=None, tokenizer=None, analyzer='ngram',
+                 preprocessor=None, analyzer='ngram',
                  stop_words=None, token_pattern=r"(?u)\b\w\w+\b",
                  max_df=1.0, min_df=0,
                  max_features=None, vocabulary=None, binary=False, dtype=float,
                  norm='l2', use_idf=True, smooth_idf=True,
                  sublinear_tf=False, use_tfidf=True,
-                 record_stats=True, k=1,
+                 debug_level=0, k=1,
                  sim_compressor='eval.utils.misc.unit',
                  train_token_handler='eval.pipeline.feature_handlers.BaseFeatureHandler',
                  decode_token_handler='eval.pipeline.feature_handlers.BaseFeatureHandler',
@@ -56,7 +56,7 @@ class ThesaurusVectorizer(TfidfVectorizer):
         :param standard_ngram_features: int. Extract standard (adjacent) ngram features up to this length
         """
         self.use_tfidf = use_tfidf
-        self.record_stats = record_stats
+        self.debug_level = debug_level
         self.k = k
         self.sim_compressor = sim_compressor
         self.train_token_handler = train_token_handler
@@ -77,7 +77,6 @@ class ThesaurusVectorizer(TfidfVectorizer):
                                                   strip_accents=strip_accents,
                                                   lowercase=lowercase,
                                                   preprocessor=preprocessor,
-                                                  tokenizer=tokenizer,
                                                   analyzer=analyzer,
                                                   stop_words=stop_words,
                                                   token_pattern=token_pattern,
@@ -102,7 +101,7 @@ class ThesaurusVectorizer(TfidfVectorizer):
                                          self.thesaurus)
         # requested stats that to go HDF, store the name so we can record stats to that name at decode time too
         self.stats_hdf_file_ = stats_hdf_file
-        self.stats = get_stats_recorder(self.record_stats, stats_hdf_file, 'tr', cv_fold, self.k)
+        self.stats = get_stats_recorder(self.debug_level, stats_hdf_file, 'tr', cv_fold, self.k)
         # a different stats recorder will be used for the testing data
 
         # ########## BEGIN super.fit_transform ##########
@@ -153,7 +152,7 @@ class ThesaurusVectorizer(TfidfVectorizer):
         if not hasattr(self, 'vocabulary_') or len(self.vocabulary_) == 0:
             raise ValueError("Vocabulary wasn't fitted or is empty!")
         # record stats separately for the test set
-        self.stats = get_stats_recorder(self.record_stats, self.stats_hdf_file_, 'ev',
+        self.stats = get_stats_recorder(self.debug_level, self.stats_hdf_file_, 'ev',
                                         self.cv_fold, self.k)
 
         if self.random_neighbour_thesaurus:

@@ -40,7 +40,10 @@ def test_nondistributional_baseline(conf):
     conf['feature_extraction']['decode_token_handler'] = base_handler
     conf['vector_sources']['neighbours_file'] = []
     conf['feature_selection']['must_be_in_thesaurus'] = False
-    run_experiment(conf)
+
+    for debug_level in [0, 1, 2]:
+        conf['debug_level'] = debug_level
+        run_experiment(conf)
 
 
 def test_nondistributional_baseline_improperly_configured(conf):
@@ -78,7 +81,6 @@ def test_distributional_with_vector_clusters(conf, tmpdir):
     tmpclusters = str(tmpdir.join('tmp_random_clusters'))
     cluster_vectors(tmpfile, tmpclusters, n_clusters=5, n_jobs=1)
 
-    conf['debug'] = False
     conf['vector_sources']['neighbours_file'] = []
     conf['feature_extraction']['vectorizer'] = 'eval.pipeline.multivectors.KmeansVectorizer'
     conf['vector_sources']['clusters_file'] = tmpclusters
@@ -86,4 +88,6 @@ def test_distributional_with_vector_clusters(conf, tmpdir):
     # no point in checking in they are in the thesaurus
     conf['feature_selection']['must_be_in_thesaurus'] = False
 
-    run_experiment(conf)
+    for debug_level in [0, 1, 2]:
+        conf['debug_level'] = debug_level
+        run_experiment(conf)

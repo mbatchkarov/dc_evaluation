@@ -1,6 +1,6 @@
 name=string() # used to identify output files
-debug=boolean(default=False) #if true, pipelines will be pickled and feature vectors will be dumped as csv
 shuffle_targets=boolean(default=False) # randomly change the labels of all documents, sanity check
+debug_level=integer(0, 2, default=0)) # How much information to record. 0 = result only, 1 = write information about replacements made at decode time to ./statistics, 2 = pipelines will be pickled and feature vectors will be dumped as csv
 
 training_data=string(default='') # training data
 test_data=string(default='') # optional test data. If none is provided crossvalidation can be done. Providing this is useful for unit testing or when using a corpus where the train-test split is pre-defined like Reuters-21578
@@ -24,7 +24,6 @@ min_train_features = float() # these need to be a float when using similarity sc
 	coarse_pos=boolean(default=True) # big/JJ -> big/J
 	normalise_entities=boolean(default=False) # all named entities -> PERSON/LOCATION/MISC
 
-	record_stats=boolean(default=False) # write information about replacements made at decode time to ./statistics
 	sim_compressor=string(default='eval.utils.misc.unit') # how to scale the sim between two features in a thesaurus when replacing
 
 	train_token_handler=string(default='eval.pipeline.feature_handlers.BaseFeatureHandler') # specified which class to handle the convertion of tokens/ngrams to features

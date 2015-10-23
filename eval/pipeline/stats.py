@@ -73,8 +73,9 @@ class NoopStatsRecorder(StatsRecorder):
     register_token = consolidate_stats = register_paraphrase = get_paraphrase_statistics = noop
 
 
-def get_stats_recorder(enabled, stats_file_prefix, stage, cv_fold, n_replacements):
-    if enabled and stats_file_prefix:
+def get_stats_recorder(debug_level, stats_file_prefix, stage, cv_fold, n_replacements):
+    print(debug_level)
+    if debug_level and stats_file_prefix:
         return StatsRecorder(stats_file_prefix, stage, cv_fold, n_replacements=n_replacements)
     else:
         return NoopStatsRecorder()

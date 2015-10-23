@@ -85,7 +85,7 @@ def _build_crossvalidation_iterator(config, y_train, y_test=None):
     return iterator, y_train
 
 
-def _build_vectorizer(init_args, feature_extraction_conf, pipeline_list):
+def _build_vectorizer(init_args, conf, pipeline_list):
     """
     Builds a vectorized that converts raw text to feature vectors. The
     parameters for the vectorizer are specified in the *feature extraction*
@@ -102,6 +102,7 @@ def _build_vectorizer(init_args, feature_extraction_conf, pipeline_list):
         can be anything but has to implement the methods *fit*,
         *transform* and *fit_transform* as per scikit-learn.
     """
+    feature_extraction_conf = conf['feature_extraction']
     vectorizer = get_named_object(feature_extraction_conf['vectorizer'])
 
     # get the names of the arguments that the vectorizer class takes
@@ -110,7 +111,7 @@ def _build_vectorizer(init_args, feature_extraction_conf, pipeline_list):
     # instead its constructor should take **kwargs, and we can pass in whatever we want with no need to manually check
     # which parameters are valid for that object
     init_args.update(get_intersection_of_parameters(vectorizer, feature_extraction_conf, 'vect'))
-
+    init_args.update(get_intersection_of_parameters(vectorizer, conf, 'vect')) # get debug_level from conf file
     pipeline_list.append(('vect', vectorizer()))
 
 
@@ -146,17 +147,17 @@ def _build_pipeline(conf, predefined_fit_args, cv_i):
         - classifier
     """
     exp_name = conf['name']
-    debug = conf['debug']
+    debug_level = conf['debug_level']
 
     init_args = {}
     pipeline_list = []
 
-    _build_vectorizer(init_args, conf['feature_extraction'], pipeline_list)
+    _build_vectorizer(init_args, conf, pipeline_list)
 
     _build_feature_selector(init_args, conf['feature_selection'], pipeline_list)
 
     # put the optional dumper after feature selection/dim. reduction
-    if debug:
+    if debug_level > 0:
         logging.info('Will perform post-vectorizer data dump')
         pipeline_list.append(('dumper', FeatureVectorsCsvDumper(exp_name, cv_i, conf['output_dir'])))
 
@@ -165,10 +166,10 @@ def _build_pipeline(conf, predefined_fit_args, cv_i):
     pipeline_list.append(('stripper', MetadataStripper()))
 
     fit_args = {}
-    if conf['feature_extraction']['record_stats']:
+    if debug_level > 0:
         fit_args['vect__stats_hdf_file'] = 'statistics/stats-%s' % exp_name
 
-    pipeline = PicklingPipeline(pipeline_list, exp_name) if debug else Pipeline(pipeline_list)
+    pipeline = PicklingPipeline(pipeline_list, exp_name) if debug_level > 1 else Pipeline(pipeline_list)
     for step_name, _ in pipeline.steps:
         for param_name, param_val in predefined_fit_args.items():
             fit_args['%s__%s' % (step_name, param_name)] = param_val
@@ -258,7 +259,7 @@ def _cv_loop(config, cv_i, score_func, test_idx, train_idx, predefined_fit_args,
         np.savetxt(os.path.join(config['output_dir'], 'predictions-%s-cv%d.csv' % (clf_name, cv_i)),
                    predictions, delimiter=',', fmt="%s")
 
-        if config['debug']:
+        if config['debug_level'] > 1:
             # if a feature selectors exist, use its vocabulary
             # step_name = 'fs' if 'fs' in pipeline.named_steps else 'vect'
             with open('%s.%s.pkl' % (stats.prefix, clf_name), 'wb') as outf:

@@ -1,5 +1,6 @@
 from collections import Counter
 import sys
+import os
 
 from discoutils.tokens import DocumentFeature
 
@@ -29,7 +30,8 @@ def get_all_document_features(include_unigrams=False):
     result = set()
     accepted_df_types = {'AN', 'NN', 'VO', 'SVO', '1-GRAM'} if include_unigrams else {'AN', 'NN', 'VO', 'SVO'}
     for corpus_name, _ in get_all_corpora():
-        with open('%s/%s_all_features.txt' % (ROOT, corpus_name)) as infile:
+        path = os.path.abspath(os.path.join(__file__, '..', '..', '..', ROOT, '%s_all_features.txt' % corpus_name))
+        with open(path) as infile:
             for line in infile:
                 df = DocumentFeature.from_string(line.strip())
                 if df.type in accepted_df_types:

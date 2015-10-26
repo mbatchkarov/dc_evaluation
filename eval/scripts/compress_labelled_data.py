@@ -19,12 +19,12 @@ from eval.evaluate import is_valid_file
 ROOT = 'features_in_labelled'
 
 
-def get_all_document_features(include_unigrams=False):
+def get_all_document_features(include_unigrams=False, remove_pos=False):
     """
     Finds all noun-noun and adj-noun compounds (and optionally adjs and nouns) in all labelled corpora
     mentioned in the conf files.
-    :param path_to_existing: Path to the output of this when it was last ran. Can save lots of time.
     :param include_unigrams: if False, only NPs will be returned
+    :param remove_pos: whether to remove PoS tags if present, result will be either "cat/N" or "cat"
     :rtype: set of DocumentFeature
     """
     result = set()
@@ -35,10 +35,15 @@ def get_all_document_features(include_unigrams=False):
             for line in infile:
                 df = DocumentFeature.from_string(line.strip())
                 if df.type in accepted_df_types:
-                    result.add(df)
+                    if remove_pos:
+                        # todo these are of type str, in the other branch it's DocumentFeature. things will likely break
+                        result.add(df.ngram_separator.join(t.text for t in df.tokens))
+                    else:
+                        result.add(df)
 
     logging.info('Found a total of %d features in all corpora', len(result))
-    logging.info('Their types are %r', Counter(df.type for df in result))
+    if not remove_pos:
+        logging.info('Their types are %r', Counter(df.type for df in result))
     if include_unigrams:
         logging.info('PoS tags of unigrams are are %r',
                      Counter(df.tokens[0].pos for df in result if df.type == '1-GRAM'))

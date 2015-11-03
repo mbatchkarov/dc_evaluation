@@ -183,4 +183,7 @@ def get_all_corpora():
 
     :rtype: list
     """
-    return [('web', 'data/web-tagged')]
+    return [('web', 'data/web-tagged'),
+            ('amazon', 'data/amazon-xml'),
+            ('maas', 'data/maas-xml')
+            ]

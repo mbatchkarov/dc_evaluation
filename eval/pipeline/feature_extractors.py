@@ -16,6 +16,7 @@ class FeatureExtractor(object):
 
     def update(self, **kwargs):
         self.__dict__.update(**kwargs)
+        return self
 
     def extract_features_from_single_dependency_tree(self, parse_tree):
         """

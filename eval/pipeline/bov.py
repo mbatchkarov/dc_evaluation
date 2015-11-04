@@ -8,41 +8,24 @@ import networkx as nx
 import scipy.sparse as sp
 import numpy as np
 
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
-from eval.pipeline.classifiers import NoopTransformer
-from eval.pipeline.feature_extractors import FeatureExtractor
 from eval.pipeline.feature_handlers import get_token_handler
 from eval.pipeline.stats import get_stats_recorder
 
 
-class ThesaurusVectorizer(TfidfVectorizer):
+class ThesaurusVectorizer(CountVectorizer):
     """
     A thesaurus-backed CountVectorizer that can replace unknown features with
     their k nearest neighbours in the thesaurus.
     """
 
-    def __init__(self, lowercase=True,
-                 input='content', encoding='utf-8', decode_error='strict',
-                 strip_accents=None,
-                 preprocessor=None, analyzer='ngram',
-                 stop_words=None, token_pattern=r"(?u)\b\w\w+\b",
-                 max_df=1.0, min_df=0,
-                 max_features=None, vocabulary=None, binary=False, dtype=float,
-                 norm='l2', use_idf=True, smooth_idf=True,
-                 sublinear_tf=False, use_tfidf=True,
+    def __init__(self, max_df=1.0, min_df=0,
                  debug_level=0, k=1,
                  sim_compressor='eval.utils.misc.unit',
                  train_token_handler='eval.pipeline.feature_handlers.BaseFeatureHandler',
                  decode_token_handler='eval.pipeline.feature_handlers.BaseFeatureHandler',
-                 train_time_opts={'extract_unigram_features': ['J', 'N'],
-                                  'extract_phrase_features': ['AN', 'NN', 'VO', 'SVO']},
-                 decode_time_opts={'extract_unigram_features': '',
-                                   'extract_phrase_features': ['AN', 'NN']},
-                 standard_ngram_features=0,
-                 remove_features_with_NER=False,
-                 random_neighbour_thesaurus=False, **kwargs
-                 ):
+                 random_neighbour_thesaurus=False, **kwargs):
         """
         Builds a vectorizer the way a TfidfVectorizer is built, and takes one
         extra param specifying the path the the Byblo-generated thesaurus.
@@ -55,45 +38,25 @@ class ThesaurusVectorizer(TfidfVectorizer):
 
         :param standard_ngram_features: int. Extract standard (adjacent) ngram features up to this length
         """
-        self.use_tfidf = use_tfidf
         self.debug_level = debug_level
         self.k = k
         self.sim_compressor = sim_compressor
         self.train_token_handler = train_token_handler
         self.decode_token_handler = decode_token_handler
-        self.train_time_opts = train_time_opts
-        self.decode_time_opts = decode_time_opts
         self.random_neighbour_thesaurus = random_neighbour_thesaurus
-
+        self.stats_hdf_file_ = None
         self.stats = None
         self.handler = None
-        self.feature_extractor = FeatureExtractor(remove_features_with_NER=remove_features_with_NER,
-                                                  standard_ngram_features=standard_ngram_features,
-                                                  **train_time_opts)
+        self.feature_extractor = None
+        self.decode_time_extractor = None
 
-        super(ThesaurusVectorizer, self).__init__(input=input,
-                                                  encoding=encoding,
-                                                  decode_error=decode_error,
-                                                  strip_accents=strip_accents,
-                                                  lowercase=lowercase,
-                                                  preprocessor=preprocessor,
-                                                  analyzer=analyzer,
-                                                  stop_words=stop_words,
-                                                  token_pattern=token_pattern,
-                                                  max_df=max_df,
-                                                  min_df=min_df,
-                                                  max_features=max_features,
-                                                  vocabulary=vocabulary,
-                                                  use_idf=use_idf,
-                                                  smooth_idf=smooth_idf,
-                                                  sublinear_tf=sublinear_tf,
-                                                  binary=binary,
-                                                  norm=norm,
-                                                  dtype=dtype)
+        super(ThesaurusVectorizer, self).__init__(input=input, max_df=max_df, min_df=min_df, dtype=float)
 
-    def fit_transform(self, raw_documents, y=None, vector_source=None, stats_hdf_file=None, cv_fold=-1):
+    def fit_transform(self, raw_documents, y=None, vector_source=None, stats_hdf_file=None,
+                      cv_fold=-1, train_time_extractor=None, decode_time_extractor=None):
         self.cv_fold = cv_fold
-        self.feature_extractor.update(**self.train_time_opts)
+        self.feature_extractor = train_time_extractor
+        self.decode_time_extractor = decode_time_extractor
         self.thesaurus = vector_source
         self.handler = get_token_handler(self.train_token_handler,
                                          self.k,
@@ -145,7 +108,7 @@ class ThesaurusVectorizer(TfidfVectorizer):
         return X, self.vocabulary_
 
     def transform(self, raw_documents):
-        self.feature_extractor.update(**self.decode_time_opts)
+        self.feature_extractor = self.decode_time_extractor
         if not hasattr(self, 'vocabulary_'):
             self._check_vocabulary()
 
@@ -208,9 +171,6 @@ class ThesaurusVectorizer(TfidfVectorizer):
         if hasattr(self, 'cv_number'):
             logging.info('cv_number=%s', self.cv_number)
         logging.info('Converting features to vectors (with thesaurus lookup)')
-
-        if not self.use_tfidf:
-            self._tfidf = NoopTransformer()
 
         if fixed_vocab:
             vocabulary = self.vocabulary_

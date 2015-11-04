@@ -8,13 +8,14 @@ from numpy.ma import std
 import numpy.testing as t
 import scipy.sparse as sp
 
-from discoutils.thesaurus_loader import Thesaurus
 from eval.pipeline.thesauri import DummyThesaurus
 from eval import evaluate
 from eval.scripts.compress_labelled_data import jsonify_single_labelled_corpus
+from eval.utils.conf_file_utils import parse_config_file
 from tests.test_feature_selectors import strip
 from eval.utils.data_utils import get_tokenized_data
 
+tsv_file = 'tests/resources/exp0-0b.strings'
 tokenizer_opts = {
     'normalise_entities': False,
     'use_pos': True,
@@ -38,78 +39,6 @@ pruned_vocab = {'a/N': 0, 'b/N': 1, 'd/N': 2}
 full_vocab = {'a/N': 0, 'b/N': 1, 'c/N': 2, 'd/N': 3, 'e/N': 4, 'f/N': 5}
 
 
-@pytest.fixture
-def feature_extraction_conf():
-    return {
-        'vectorizer': 'eval.pipeline.bov.ThesaurusVectorizer',
-        'analyzer': 'ngram',
-        'use_tfidf': False,
-        'min_df': 1,
-        'lowercase': False,
-        'record_stats': True,
-        'k': 10,  # use all thesaurus entries
-        'train_token_handler': 'eval.pipeline.feature_handlers.BaseFeatureHandler',
-        'decode_token_handler': 'eval.pipeline.feature_handlers.BaseFeatureHandler',
-        'train_time_opts': dict(extract_unigram_features=['J', 'N', 'V'],
-                                extract_phrase_features=[]),
-        'decode_time_opts': dict(extract_unigram_features=['J', 'N', 'V'],
-                                 extract_phrase_features=[])
-    }
-
-
-@pytest.fixture(scope='module')
-def feature_selection_conf():
-    return {
-        'run': True,
-        'method': 'eval.pipeline.feature_selectors.VectorBackedSelectKBest',
-        'scoring_function': 'sklearn.feature_selection.chi2',
-        'must_be_in_thesaurus': False,
-        'k': 'all',
-        'thesaurus': None
-    }
-
-
-def _vectorize_data(data_paths, feature_selection_conf=feature_selection_conf(),
-                    feature_extraction_conf=feature_extraction_conf(), vector_source=None):
-    # at this point _load_data should have been called and as a result the fields
-    # x_tr, y_tr, x_test and y_test must have been initialised
-    # also, tokenizer and thesaurus must have been initialised
-    if isinstance(vector_source, str):
-        vector_source = Thesaurus.from_tsv(vector_source)
-
-    conf = {'feature_selection': feature_selection_conf,
-            'feature_extraction': feature_extraction_conf,
-            'vector_sources': {'neighbour_strategy': 'linear'},
-            'name': 'test_main',
-            'debug_level': 2,
-            'output_dir': '.'}
-    feature_selection_conf['thesaurus'] = vector_source
-    pipeline, fit_params = evaluate._build_pipeline(
-        conf,
-        {'vector_source': vector_source},
-        12345,  # id for naming debug files
-        # vector_source,
-        # None, # classifier
-        # feature_extraction_conf,
-        # feature_selection_conf,
-        # None, # classifier options
-        # '.',  # temp files dir
-        # True,  # debug mode
-        # 'test_main'  # name of experiments
-    )
-
-    x_tr, y_tr, x_test, y_test = get_tokenized_data(data_paths[0], tokenizer_opts, test_data=data_paths[1])
-
-    x1 = pipeline.fit_transform(x_tr, y_tr, **fit_params)
-    if 'fs' in pipeline.named_steps:
-        pipeline.named_steps['vect'].vocabulary_ = pipeline.named_steps['fs'].vocabulary_
-
-    voc = pipeline.named_steps['fs'].vocabulary_
-    x2 = pipeline.transform(x_test)
-
-    return x1, x2, voc
-
-
 def teardown_module(module):
     """
     This is a pytest module-level teardown function
@@ -122,7 +51,7 @@ def teardown_module(module):
                 os.remove(f)
 
 
-@pytest.fixture(params=['xml', 'json'], scope='module')
+@pytest.fixture(params=['xml', 'json'])
 def data(request):
     """
     Returns path to a labelled dataset on disk
@@ -142,10 +71,66 @@ def data(request):
         return tr_path + '.gz', ev_path + '.gz'
 
 
-def test_nondistributional_baseline_without_feature_selection(data):
-    tsv_file = 'tests/resources/exp0-0b.strings'
+@pytest.fixture
+def conf(tmpdir):
+    # load default configuration
+    tmpfile = tmpdir.join('blank')
+    with open(str(tmpfile), 'w'):
+        pass  # touch
+    res, _ = parse_config_file(str(tmpfile), confrc='conf/confrc', quit_on_error=False)
 
-    x1, x2, voc = _vectorize_data(data, vector_source=tsv_file)
+    res['feature_extraction'].update({
+        'class': 'eval.pipeline.bov.ThesaurusVectorizer',
+        'min_df': 1,
+        'k': 10,  # use all thesaurus entries
+        'train_token_handler': 'eval.pipeline.feature_handlers.BaseFeatureHandler',
+        'decode_token_handler': 'eval.pipeline.feature_handlers.BaseFeatureHandler',
+        'random_neighbour_thesaurus': False,
+        'train_time_opts': dict(extract_unigram_features=['J', 'N', 'V'],
+                                extract_phrase_features=[]),
+        'decode_time_opts': dict(extract_unigram_features=['J', 'N', 'V'],
+                                 extract_phrase_features=[])
+    })
+
+    res['feature_selection'].update({
+        'run': True,
+        'method': 'eval.pipeline.feature_selectors.VectorBackedSelectKBest',
+        'scoring_function': 'sklearn.feature_selection.chi2',
+        'must_be_in_thesaurus': False,
+        'k': 'all',
+    })
+
+    res['vector_sources']['is_thesaurus'] = True
+    return res
+
+
+def _vectorize_data(data_paths, config, dummy=False):
+    if dummy:
+        config['vector_sources']['dummy_thesaurus'] = True
+        config['vector_sources']['neighbours_file'] = []
+    else:
+        config['vector_sources']['neighbours_file'] = [tsv_file]
+
+    config['vector_sources']['neighbour_strategy'] = 'linear'
+    config['name'] = 'test_main',
+    config['debug_level'] = 2
+    config['output_dir'] = '.'
+    pipeline, fit_params = evaluate._build_pipeline(config, 12345)
+
+    x_tr, y_tr, x_test, y_test = get_tokenized_data(data_paths[0], tokenizer_opts, test_data=data_paths[1])
+
+    x1 = pipeline.fit_transform(x_tr, y_tr, **fit_params)
+    if 'fs' in pipeline.named_steps:
+        pipeline.named_steps['vect'].vocabulary_ = pipeline.named_steps['fs'].vocabulary_
+
+    voc = pipeline.named_steps['fs'].vocabulary_
+    x2 = pipeline.transform(x_test)
+
+    return x1, x2, voc
+
+
+def test_nondistributional_baseline_without_feature_selection(data, conf):
+    x1, x2, voc = _vectorize_data(data, conf)
     assert full_vocab == strip(voc)
 
     assert isinstance(x1, sp.spmatrix)
@@ -164,43 +149,13 @@ def test_nondistributional_baseline_without_feature_selection(data):
     )
 
 
-def test_use_thesaurus_ignore_nonthesaurus_features(data, feature_selection_conf):
-    feature_selection_conf['must_be_in_thesaurus'] = True
-    tsv_file = 'tests/resources/exp0-0b.strings'
-
-    x1, x2, voc = _vectorize_data(data,
-                                  feature_selection_conf=feature_selection_conf,
-                                  vector_source=tsv_file)
-
-    assert pruned_vocab == strip(voc)
-
-    t.assert_array_equal(
-        x1.toarray(),
-        pruned_training_matrix
-    )
-
-    t.assert_array_equal(
-        x2.toarray(),
-        np.array(
-            [
-                [4, 1, 0]
-            ]
-        )
-    )
-
-
-def test_baseline_use_all_features_with__signifier_signified(data, feature_extraction_conf,
-                                                             feature_selection_conf):
-    feature_selection_conf['must_be_in_thesaurus'] = False
-    feature_extraction_conf['decode_token_handler'] = \
+def test_baseline_use_all_features_with__signifier_signified(data, conf):
+    conf['feature_selection']['must_be_in_thesaurus'] = False
+    conf['vectorizer']['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler'
-    feature_extraction_conf['k'] = 1
-    tsv_file = 'tests/resources/exp0-0b.strings'
+    conf['vectorizer']['k'] = 1
 
-    x1, x2, voc = _vectorize_data(data,
-                                  feature_extraction_conf=feature_extraction_conf,
-                                  feature_selection_conf=feature_selection_conf,
-                                  vector_source=tsv_file)
+    x1, x2, voc = _vectorize_data(data, conf)
 
     assert full_vocab == strip(voc)
 
@@ -220,18 +175,13 @@ def test_baseline_use_all_features_with__signifier_signified(data, feature_extra
     )
 
 
-def test_baseline_ignore_nonthesaurus_features_with_signifier_signified(data, feature_extraction_conf,
-                                                                        feature_selection_conf):
-    feature_selection_conf['must_be_in_thesaurus'] = True
-    feature_extraction_conf['decode_token_handler'] = \
+def test_baseline_ignore_nonthesaurus_features_with_signifier_signified(data, conf):
+    conf['feature_selection']['must_be_in_thesaurus'] = True
+    conf['vectorizer']['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler'
-    feature_extraction_conf['k'] = 1
-    tsv_file = 'tests/resources/exp0-0b.strings'
+    conf['vectorizer']['k'] = 1
 
-    x1, x2, voc = _vectorize_data(data,
-                                  feature_extraction_conf=feature_extraction_conf,
-                                  feature_selection_conf=feature_selection_conf,
-                                  vector_source=tsv_file)
+    x1, x2, voc = _vectorize_data(data, conf)
     assert pruned_vocab == strip(voc)
     assert isinstance(x1, sp.spmatrix)
     t.assert_array_equal(
@@ -249,17 +199,13 @@ def test_baseline_ignore_nonthesaurus_features_with_signifier_signified(data, fe
     )
 
 
-def test_baseline_use_all_features_with_signified(data, feature_extraction_conf, feature_selection_conf):
-    feature_selection_conf['must_be_in_thesaurus'] = False
-    feature_extraction_conf['decode_token_handler'] = \
+def test_baseline_use_all_features_with_signified(data, conf):
+    conf['feature_selection']['must_be_in_thesaurus'] = False
+    conf['vectorizer']['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
-    feature_extraction_conf['k'] = 1  # equivalent to max
-    tsv_file = 'tests/resources/exp0-0b.strings'
+    conf['vectorizer']['k'] = 1  # equivalent to max
 
-    x1, x2, voc = _vectorize_data(data,
-                                  feature_extraction_conf=feature_extraction_conf,
-                                  feature_selection_conf=feature_selection_conf,
-                                  vector_source=tsv_file)
+    x1, x2, voc = _vectorize_data(data, conf)
 
     assert full_vocab == strip(voc)
 
@@ -279,17 +225,13 @@ def test_baseline_use_all_features_with_signified(data, feature_extraction_conf,
     )
 
 
-def test_baseline_ignore_nonthesaurus_features_with_signified(data, feature_extraction_conf, feature_selection_conf):
-    feature_selection_conf['must_be_in_thesaurus'] = True
-    feature_extraction_conf['decode_token_handler'] = \
+def test_baseline_ignore_nonthesaurus_features_with_signified(data, conf):
+    conf['feature_selection']['must_be_in_thesaurus'] = True
+    conf['vectorizer']['decode_token_handler'] = \
         'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
-    feature_extraction_conf['k'] = 1  # equivalent to max
-    tsv_file = 'tests/resources/exp0-0b.strings'
+    conf['vectorizer']['k'] = 1
 
-    x1, x2, voc = _vectorize_data(data,
-                                  feature_extraction_conf=feature_extraction_conf,
-                                  feature_selection_conf=feature_selection_conf,
-                                  vector_source=tsv_file)
+    x1, x2, voc = _vectorize_data(data, conf)
 
     assert pruned_vocab == strip(voc)
 
@@ -309,19 +251,13 @@ def test_baseline_ignore_nonthesaurus_features_with_signified(data, feature_extr
     )
 
 
-def test_baseline_use_all_features_with_signified_random(data, feature_extraction_conf, feature_selection_conf):
-    feature_selection_conf['must_be_in_thesaurus'] = False
-    feature_extraction_conf['decode_token_handler'] = \
-        'eval.pipeline.feature_handlers.SignifierRandomBaselineFeatureHandler'
-    feature_extraction_conf['k'] = 1
-    feature_extraction_conf['neighbour_source'] = \
-        'eval.tests.test_main._get_constant_thesaurus'
+def test_baseline_use_all_features_with_signified_random(data, conf):
+    conf['feature_selection']['must_be_in_thesaurus'] = False
+    conf['vectorizer']['decode_token_handler'] = \
+        'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler'
+    conf['vectorizer']['k'] = 1
 
-    source = DummyThesaurus()
-    x1, x2, voc = _vectorize_data(data,
-                                  feature_extraction_conf=feature_extraction_conf,
-                                  feature_selection_conf=feature_selection_conf,
-                                  vector_source=source)
+    x1, x2, voc = _vectorize_data(data, conf, dummy=True)
 
     assert full_vocab == strip(voc)
 
@@ -342,8 +278,7 @@ def test_baseline_use_all_features_with_signified_random(data, feature_extractio
     # the thesaurus will always say the neighbour for something is
     # b/N with a similarity of 1, and we look up 11 tokens overall in
     # the test document
-    source.vocab = voc
-    x1, x2, voc = _vectorize_data(data, vector_source=source)
+    x1, x2, voc = _vectorize_data(data, conf, dummy=True)
     assert x2.sum(), 11.0
     assert std(x2.todense()) > 0
     # seven tokens will be looked up, with random in-vocabulary neighbours

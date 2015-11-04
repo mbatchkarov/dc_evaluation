@@ -1,5 +1,6 @@
 from discoutils.tokens import DocumentFeature
 from discoutils.thesaurus_loader import Thesaurus
+from eval.pipeline.thesauri import DummyThesaurus
 from eval.utils.reflection_utils import get_named_object
 
 

@@ -3,6 +3,7 @@ import logging
 import pytest
 import numpy as np
 import pandas as pd
+from eval.pipeline.feature_extractors import FeatureExtractor
 
 from eval.scripts.kmeans_disco import cluster_vectors
 from eval.pipeline.multivectors import KmeansVectorizer
@@ -54,7 +55,9 @@ def _vectorize(clusters, corpus):
     v = KmeansVectorizer(min_df=0,
                          train_time_opts=feature_types,
                          decode_time_opts=feature_types)
-    X, _ = v.fit_transform(corpus, clusters=pd.read_hdf(clusters, key='clusters'))
+    feature_extractor = FeatureExtractor().update(**feature_types)
+    X, _ = v.fit_transform(corpus, clusters=pd.read_hdf(clusters, key='clusters'),
+                           train_time_extractor=feature_extractor, decode_time_extractor=feature_extractor)
     return X, v
 
 

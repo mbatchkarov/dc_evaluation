@@ -97,20 +97,19 @@ def _build_vectorizer(init_args, conf, pipeline_list):
      The vectorizer converts a corpus into a term frequency matrix. A given
      source corpus is converted into a term frequency matrix and
      returned as a numpy *coo_matrix*.The value of the *vectorizer* field
-        in the main configuration file is used as the transformer class.
-        This class
-        can be anything but has to implement the methods *fit*,
-        *transform* and *fit_transform* as per scikit-learn.
+     in the main configuration file is used as the transformer class. This class
+     has to implement the methods *fit*, *transform* and *fit_transform* as
+     per scikit-learn.
     """
-    feature_extraction_conf = conf['feature_extraction']
-    vectorizer = get_named_object(feature_extraction_conf['vectorizer'])
+    vectorizer = get_named_object(conf['vectorizer']['class'])
 
     # get the names of the arguments that the vectorizer class takes
     # the object must only take keyword arguments
     # todo KmeansVectorizer does not declare its parameters explicitly so intersection doesnt work
     # instead its constructor should take **kwargs, and we can pass in whatever we want with no need to manually check
     # which parameters are valid for that object
-    init_args.update(get_intersection_of_parameters(vectorizer, feature_extraction_conf, 'vect'))
+    init_args.update(get_intersection_of_parameters(vectorizer, conf['feature_extraction'], 'vect'))
+    init_args.update(get_intersection_of_parameters(vectorizer, conf['vectorizer'], 'vect'))
     init_args.update(get_intersection_of_parameters(vectorizer, conf, 'vect')) # get debug_level from conf file
     pipeline_list.append(('vect', vectorizer()))
 
@@ -138,7 +137,7 @@ def _build_feature_selector(init_args, feature_selection_conf, pipeline_list):
         pipeline_list.append(('fs', method(scoring_func)))
 
 
-def _build_pipeline(conf, predefined_fit_args, cv_i):
+def _build_pipeline(conf, cv_i):
     """
     Builds a pipeline consisting of
         - feature extractor
@@ -170,13 +169,14 @@ def _build_pipeline(conf, predefined_fit_args, cv_i):
         fit_args['vect__stats_hdf_file'] = 'statistics/stats-%s' % exp_name
 
     pipeline = PicklingPipeline(pipeline_list, exp_name) if debug_level > 1 else Pipeline(pipeline_list)
+    shared_fit_args = get_pipeline_fit_args(conf)
     for step_name, _ in pipeline.steps:
-        for param_name, param_val in predefined_fit_args.items():
+        for param_name, param_val in shared_fit_args.items():
             fit_args['%s__%s' % (step_name, param_name)] = param_val
         fit_args['%s__cv_fold' % step_name] = cv_i
     fit_args['stripper__strategy'] = conf['vector_sources']['neighbour_strategy']
     # tell vector source to retrieve a few more neighbours than would be needed
-    fit_args['stripper__k'] = int(conf['feature_extraction']['k'] * 8)
+    fit_args['stripper__k'] = int(conf['vectorizer']['k'] * 8)
     pipeline.set_params(**init_args)
     logging.debug('Pipeline is:\n %s', pipeline)
     return pipeline, fit_args
@@ -195,9 +195,10 @@ def _build_classifiers(classifiers_conf):
         yield clf(**init_args)
 
 
-def _cv_loop(config, cv_i, score_func, test_idx, train_idx, predefined_fit_args, X, y):
+def _cv_loop(config, cv_i, score_func, test_idx, train_idx, X, y):
     logging.info('Starting CV fold %d', cv_i)
-    pipeline, fit_params = _build_pipeline(config, predefined_fit_args, cv_i)
+    pipeline, fit_params = _build_pipeline(config, cv_i)
+
     # code below is a simplified version of sklearn's _cross_val_score
     train_text = [X[idx] for idx in train_idx]
     test_text = [X[idx] for idx in test_idx]
@@ -279,7 +280,7 @@ def _cv_loop(config, cv_i, score_func, test_idx, train_idx, predefined_fit_args,
         logging.info('Done with %s', clf)
     logging.info('Finished CV fold %d', cv_i)
     try:
-        v = predefined_fit_args['vector_source']
+        v = shared_fit_args['vector_source']
         logging.info('Cache info: %s', v.get_nearest_neighbours.cache_info())
     except Exception:
         # can fail for a number of reasons, don't care much if it does
@@ -302,15 +303,9 @@ def _store_scores(scores, output_dir, name):
     df.to_csv(csv, na_rep='-1')
 
 
-def run_experiment(conf, thesaurus=None):
+def run_experiment(conf):
     start_time = datetime.now()
     mkdirs_if_not_exists(conf['output_dir'])
-
-    if thesaurus:
-        fit_args = {'vector_source': thesaurus}
-    else:
-        fit_args = get_pipeline_fit_args(conf)
-
     test_path = ''
     tr_data = conf['training_data']
     if conf['test_data']:
@@ -334,8 +329,7 @@ def run_experiment(conf, thesaurus=None):
     all_scores = []
     params = []
     for i, (train_idx, test_idx) in enumerate(cv_iterator):
-        params.append((conf, i, multiple_scores, test_idx, train_idx,
-                       fit_args, x_vals, y_vals))
+        params.append((conf, i, multiple_scores, test_idx, train_idx, x_vals, y_vals))
         logging.warning('Only using the first CV fold')
         if conf['crossvalidation']['break_after_first']:
             # only do one train/test split to save time

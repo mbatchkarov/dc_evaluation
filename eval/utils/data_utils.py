@@ -7,11 +7,12 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import load_files
 
-from discoutils.thesaurus_loader import Vectors
+from discoutils.thesaurus_loader import Vectors, Thesaurus
 from discoutils.misc import is_gzipped, _check_file_magic
+from eval.pipeline.feature_extractors import FeatureExtractor
 from eval.pipeline.tokenizers import GzippedJsonTokenizer, ConllTokenizer, XmlTokenizer
 from eval.utils.conf_file_utils import parse_config_file
-from eval.pipeline.thesauri import RandomThesaurus
+from eval.pipeline.thesauri import RandomThesaurus, DummyThesaurus
 from eval.pipeline.multivectors import MultiVectors
 
 
@@ -92,6 +93,7 @@ def get_tokenized_data(training_path, tokenizer_conf, shuffle_targets=False,
     else:
         raise ValueError('Input is neither a gzipped file containing all data nor a directory')
 
+
 def _get_data_iterators(path, shuffle_targets=False):
     """
     Returns iterators over the text of the data.
@@ -127,9 +129,18 @@ def get_pipeline_fit_args(conf):
     :raise ValueError: if the conf is wrong in any way
     """
     result = dict()
+    train_time_extractor = FeatureExtractor().update(**conf['feature_extraction']).\
+        update(**conf['feature_extraction']['train_time_opts'])
+    result['train_time_extractor'] = train_time_extractor
+    decode_time_extractor = FeatureExtractor().update(**conf['feature_extraction']).\
+        update(**conf['feature_extraction']['decode_time_opts'])
+    result['decode_time_extractor'] = decode_time_extractor
+
+
     vectors_exist = conf['feature_selection']['must_be_in_thesaurus']
-    handler_ = conf['feature_extraction']['decode_token_handler']
-    random_thes = conf['feature_extraction']['random_neighbour_thesaurus']
+    handler_ = conf['vectorizer']['decode_token_handler']
+    random_thes = conf['vectorizer']['random_neighbour_thesaurus']
+    dummy_thes = conf['vector_sources']['dummy_thesaurus']
     vs_params = conf['vector_sources']
     vectors_path = vs_params['neighbours_file']
     clusters_path = vs_params['clusters_file']
@@ -140,8 +151,12 @@ def get_pipeline_fit_args(conf):
     if vectors_path and clusters_path:
         raise ValueError('Cannot use both word vectors and word clusters')
 
-    if random_thes:
-        result['vector_source'] = RandomThesaurus(k=conf['feature_extraction']['k'])
+    if random_thes and dummy_thes:
+        raise ValueError('Cant use both random and dummy thesauri')
+    elif random_thes:
+        result['vector_source'] = RandomThesaurus(k=conf['vectorizer']['k'])
+    elif dummy_thes:
+        result['vector_source'] = DummyThesaurus()
     else:
         if vectors_path and clusters_path:
             raise ValueError('Cannot use both word vectors and word clusters')
@@ -157,7 +172,10 @@ def get_pipeline_fit_args(conf):
         if entries:
             entries = get_thesaurus_entries(entries)
             vs_params['row_filter'] = lambda x, y: x in entries
-        result['vector_source'] = Vectors.from_tsv(vectors_path[0], **vs_params)
+        if conf['vector_sources']['is_thesaurus']:
+            result['vector_source'] = Thesaurus.from_tsv(vectors_path[0], **vs_params)
+        else:
+            result['vector_source'] = Vectors.from_tsv(vectors_path[0], **vs_params)
     if len(vectors_path) > 1:
         all_vect = [Vectors.from_tsv(p, **vs_params) for p in vectors_path]
         result['vector_source'] = MultiVectors(all_vect)

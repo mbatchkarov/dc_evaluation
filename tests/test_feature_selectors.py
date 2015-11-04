@@ -8,6 +8,7 @@ import numpy.testing as t
 from pandas.io.parsers import read_csv
 
 from discoutils.thesaurus_loader import Vectors
+from eval.pipeline.feature_extractors import FeatureExtractor
 from eval.pipeline.feature_selectors import VectorBackedSelectKBest
 from eval.pipeline.thesauri import *
 from eval.pipeline.bov import ThesaurusVectorizer
@@ -64,18 +65,19 @@ def _do_feature_selection(must_be_in_thesaurus, k, handler='Base', vector_source
         feat_extr_opts = {'extract_unigram_features': ['J', 'N', 'V'],
                           'extract_phrase_features': ['AN', 'NN', 'VO', 'SVO']}
         standard_ngram_features = max_feature_len
+
+    feature_extractor = FeatureExtractor(standard_ngram_features=standard_ngram_features).update(**feat_extr_opts)
     pipeline_list = [
         ('vect',
          ThesaurusVectorizer(min_df=1, use_tfidf=False,
-                             train_time_opts=feat_extr_opts,
-                             decode_time_opts=feat_extr_opts,
-                             standard_ngram_features=standard_ngram_features,
                              decode_token_handler=handler_pattern.format(handler))),
         ('fs', VectorBackedSelectKBest(must_be_in_thesaurus=must_be_in_thesaurus, k=k)),
         ('dumper', FeatureVectorsCsvDumper('fs-test'))
     ]
     p = Pipeline(pipeline_list)
     fit_params = {'vect__vector_source': vector_source,
+                  'vect__train_time_extractor':feature_extractor,
+                  'vect__decode_time_extractor':feature_extractor,
                   'fs__vector_source': vector_source}
 
     tr_matrix, tr_voc = p.fit_transform(x_train, y_train, **fit_params)

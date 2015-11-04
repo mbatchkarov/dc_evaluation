@@ -27,17 +27,17 @@ def conf():
 
 
 def test_extreme_feature_expansion(conf):
-    conf['feature_extraction']['decode_token_handler'] = extreme_handler
+    conf['vectorizer']['decode_token_handler'] = extreme_handler
     run_experiment(conf)
 
 
 def test_std_feature_expansion(conf):
-    conf['feature_extraction']['decode_token_handler'] = hybrid_handler
+    conf['vectorizer']['decode_token_handler'] = hybrid_handler
     run_experiment(conf)
 
 
 def test_nondistributional_baseline(conf):
-    conf['feature_extraction']['decode_token_handler'] = base_handler
+    conf['vectorizer']['decode_token_handler'] = base_handler
     conf['vector_sources']['neighbours_file'] = []
     conf['feature_selection']['must_be_in_thesaurus'] = False
 
@@ -47,7 +47,7 @@ def test_nondistributional_baseline(conf):
 
 
 def test_nondistributional_baseline_improperly_configured(conf):
-    conf['feature_extraction']['decode_token_handler'] = base_handler
+    conf['vectorizer']['decode_token_handler'] = base_handler
     conf['vector_sources']['neighbours_file'] = []
 
     # we ask features to be in thesaurus, but do not provide one
@@ -58,7 +58,7 @@ def test_nondistributional_baseline_improperly_configured(conf):
 
 
 def test_nondistributional_baseline_test_on_training_data(conf):
-    conf['feature_extraction']['decode_token_handler'] = base_handler
+    conf['vectorizer']['decode_token_handler'] = base_handler
     conf['vector_sources']['neighbours_file'] = []
     conf['crossvalidation']['type'] = 'oracle'
     conf['test_data'] = None
@@ -82,7 +82,7 @@ def test_distributional_with_vector_clusters(conf, tmpdir):
     cluster_vectors(tmpfile, tmpclusters, n_clusters=5, n_jobs=1)
 
     conf['vector_sources']['neighbours_file'] = []
-    conf['feature_extraction']['vectorizer'] = 'eval.pipeline.multivectors.KmeansVectorizer'
+    conf['vectorizer']['class'] = 'eval.pipeline.multivectors.KmeansVectorizer'
     conf['vector_sources']['clusters_file'] = tmpclusters
     # the features of the document are cluster ids, not phrases
     # no point in checking in they are in the thesaurus

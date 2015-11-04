@@ -36,14 +36,20 @@ def test_get_pipeline_fit_args():
         'feature_selection': {
             'must_be_in_thesaurus': True
         },
-        'feature_extraction': {
+        'vectorizer': {
             'decode_token_handler': 'eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler',
             'random_neighbour_thesaurus': False,
+        },
+        'feature_extraction': {
+            'train_time_opts': {},
+            'decode_time_opts': {}
         },
         'vector_sources': {
             'neighbours_file': ['tests/resources/twos.vectors.txt'],
             'entries_of': 'tests/resources/ones.vectors.txt',
-            'clusters_file': ''
+            'clusters_file': '',
+            'is_thesaurus': False,
+            'dummy_thesaurus': False,
         }
     }
 

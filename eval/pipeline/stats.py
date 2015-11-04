@@ -74,7 +74,6 @@ class NoopStatsRecorder(StatsRecorder):
 
 
 def get_stats_recorder(debug_level, stats_file_prefix, stage, cv_fold, n_replacements):
-    print(debug_level)
     if debug_level and stats_file_prefix:
         return StatsRecorder(stats_file_prefix, stage, cv_fold, n_replacements=n_replacements)
     else:

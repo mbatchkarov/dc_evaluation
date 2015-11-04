@@ -151,6 +151,11 @@ Results will appear in `conf/exp0.output`:
 	 - neighbours_file = , # empty list
 	 - clusters_file = asdf.kmeans # some file produced by clustering step above
 
+ - Remove PoS tag from entries ("cat/N_food/N" -> "cat_food")
+ 	- feature_extraction > remove_pos = True
+ 	- the labelled data is still PoS tagged, so you can filter features by type (e.g. AN, J, N). Nearest-neighbour queries are done without a PoS tag, so it is OK if your unlabelled is not tagged.
+
+
 ### Common configuration pitfalls:
  
  - features extracted and train time do not overlap with (or are not distributionally comparable to) those at test time, e.g. nouns only at train time and verbs only at test time

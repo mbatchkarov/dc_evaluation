@@ -23,10 +23,7 @@ min_train_features = float(default=0) # these need to be a float when using simi
 [feature_extraction] # how are words converted to features?
     run=boolean(default=True)    
     remove_features_with_NER=boolean(default=False) # whether to remove document features that contain a token with NER tag  ORG, PERS, LOC- these aren't composable
-    lemmatize=boolean(default=True) 
-    use_pos=boolean(default=True) # big cat -> big/JJ cat/NNS
-	coarse_pos=boolean(default=True) # big/JJ -> big/J
-	normalise_entities=boolean(default=False) # all named entities -> PERSON/LOCATION/MISC
+    remove_pos=boolean(default=False) # useful when the distributional model has entries w/o a PoS tag
 	
     [[train_time_opts]] # things to do at train time
         extract_unigram_features=list(default=None) # PoS tags of unigram features to be extracted. If None, no unigram feats are used
@@ -40,6 +37,10 @@ min_train_features = float(default=0) # these need to be a float when using simi
     remove_stopwords=boolean(default=False)
 	remove_short_words=boolean(default=False)
 	remove_long_words=boolean(default=False) # probably noise anyway.
+	use_pos=boolean(default=True) # if PoS tags ara available, include them in each token, e.g. "big/JJ cat/NNS"
+	lemmatize=boolean(default=True) 
+    coarse_pos=boolean(default=True) # big/JJ -> big/J
+	normalise_entities=boolean(default=False) # all named entities -> PERSON/LOCATION/MISC
 
 [vector_sources] # this section will eventually replace all thesaurus-related options. There will not be a pre-computed sim matrix, just vectors in a suitable datastructure that allows fast online sim calculation
 	neighbours_file = list(default=[]) # path to either a Byblo neighbours.strings file or an events.filtered.string file

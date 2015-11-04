@@ -123,8 +123,12 @@ class FeatureExtractor(object):
                 continue
             if feat.type != '1-GRAM' and feat.type not in self.extract_phrase_features:
                 continue
+            if self.remove_features_with_NER and set(t.ner for t in feat.tokens) != {'O'}:
+                continue
+            if self.remove_pos:
+                for token in feat.tokens:
+                    token.pos = None
             res.append(feat)
-        # logging.info('Had %d feats, keeping %d', len(feature_list), len(res))
         return res
 
     def remove_features_containing_named_entities(self, features):

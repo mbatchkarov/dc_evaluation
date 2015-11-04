@@ -77,7 +77,11 @@ class BaseFeatureHandler():
 
         # logging.debug('Paraphrasing %r in doc %d', feature, doc_id)
         neighbours = self.thesaurus.get_nearest_neighbours(feature)
-        if isinstance(self.thesaurus, Thesaurus):
+        if self.thesaurus.__class__.__name__ == 'Thesaurus':
+            # todo this will also activate for DenseVectors, because they are also instances of thesaurus
+            # the check needs to be self.thesaurus.__class__.__name__ == 'Thesaurus', but then
+            # we need to make sure init_sims is called with the correct vocabulary so that all neighbours are IV
+
             # precomputed thesauri do not guarantee that the returned neighbours will be in vocabulary
             # these should by now only the used in testing though
             neighbours = [(neighbour, sim) for (neighbour, sim) in neighbours

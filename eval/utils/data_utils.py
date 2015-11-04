@@ -5,6 +5,7 @@ import random
 
 import numpy as np
 import pandas as pd
+
 from sklearn.datasets import load_files
 
 from discoutils.thesaurus_loader import Vectors, Thesaurus
@@ -24,7 +25,6 @@ def tokenize_data(data, tokenizer, corpus_ids):
     retrieving pre-tokenized data from joblib cache
     """
     x_tr, y_tr, x_test, y_test = data
-    # todo this logic needs to be moved to feature extractor
     x_tr = tokenizer.tokenize_corpus(x_tr, corpus_ids[0])
     if x_test is not None and y_test is not None and corpus_ids[1] is not None:
         x_test = tokenizer.tokenize_corpus(x_test, corpus_ids[1])
@@ -43,14 +43,7 @@ def load_text_data_into_memory(training_path, test_path=None, shuffle_targets=Fa
 
 
 def get_tokenizer_settings_from_conf(conf):
-    return {'normalise_entities': conf['feature_extraction']['normalise_entities'],
-            'use_pos': conf['feature_extraction']['use_pos'],
-            'coarse_pos': conf['feature_extraction']['coarse_pos'],
-            'lemmatize': conf['feature_extraction']['lemmatize'],
-            'lowercase': conf['tokenizer']['lowercase'],
-            'remove_stopwords': conf['tokenizer']['remove_stopwords'],
-            'remove_short_words': conf['tokenizer']['remove_short_words'],
-            'remove_long_words': conf['tokenizer']['remove_long_words']}
+    return conf['tokenizer']
 
 
 def get_tokenizer_settings_from_conf_file(conf_file):
@@ -129,13 +122,12 @@ def get_pipeline_fit_args(conf):
     :raise ValueError: if the conf is wrong in any way
     """
     result = dict()
-    train_time_extractor = FeatureExtractor().update(**conf['feature_extraction']).\
+    train_time_extractor = FeatureExtractor().update(**conf['feature_extraction']). \
         update(**conf['feature_extraction']['train_time_opts'])
     result['train_time_extractor'] = train_time_extractor
-    decode_time_extractor = FeatureExtractor().update(**conf['feature_extraction']).\
+    decode_time_extractor = FeatureExtractor().update(**conf['feature_extraction']). \
         update(**conf['feature_extraction']['decode_time_opts'])
     result['decode_time_extractor'] = decode_time_extractor
-
 
     vectors_exist = conf['feature_selection']['must_be_in_thesaurus']
     handler_ = conf['vectorizer']['decode_token_handler']

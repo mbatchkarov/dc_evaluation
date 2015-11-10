@@ -8,11 +8,13 @@ class FeatureExtractor(object):
     def __init__(self, remove_features_with_NER=False,
                  extract_unigram_features='J,N,V',
                  extract_phrase_features=['AN', 'NN', 'SVO'],
-                 standard_ngram_features=0):
+                 standard_ngram_features=0,
+                 remove_pos=False):
         self.remove_features_with_NER = remove_features_with_NER
         self.extract_phrase_features = extract_phrase_features
         self.extract_unigram_features = extract_unigram_features
         self.standard_ngram_features = standard_ngram_features
+        self.remove_pos = remove_pos
 
     def update(self, **kwargs):
         self.__dict__.update(**kwargs)

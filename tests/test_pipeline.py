@@ -112,7 +112,7 @@ def _vectorize_data(data_paths, config, dummy=False):
         config['vector_sources']['neighbours_file'] = [tsv_file]
 
     config['vector_sources']['neighbour_strategy'] = 'linear'
-    config['name'] = 'test_main',
+    config['name'] = 'test_main'
     config['debug_level'] = 2
     config['output_dir'] = '.'
     pipeline, fit_params = evaluate._build_pipeline(config, 12345)

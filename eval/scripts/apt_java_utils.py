@@ -2,15 +2,16 @@ import argparse
 from collections import Counter
 from glob import glob
 import gzip
+from itertools import zip_longest
 import logging
 import os
-
 
 from joblib import Parallel
 
 from joblib import delayed
 
 from discoutils.tokens import DocumentFeature
+
 from discoutils.collections_utils import walk_nonoverlapping_pairs
 from discoutils.reduce_dimensionality import do_svd
 from discoutils.thesaurus_loader import Vectors
@@ -19,11 +20,18 @@ __author__ = 'mmb28'
 USE_POS = False
 ROOT = 'features_in_labelled'
 
+
 # copied from dc-evaluation
 def get_all_corpora():
     return [('web', 'data/web-tagged'),
             ('amazon', 'data/amazon-xml')
             ]
+
+
+def grouper(n, iterable, fillvalue=None):
+    "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(fillvalue=fillvalue, *args)
 
 
 def get_all_document_features(include_unigrams=False, remove_pos=False):
@@ -100,19 +108,22 @@ def _read_vector(vector_file):
     return phrase, features
 
 
-def merge_vectors(composed_dir, unigrams, output, workers=4):
+def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
     d = {}
     files = glob(os.path.join(composed_dir, '*apt.vec.gz'))
     logging.info('Found %d composed phrase files', len(files))
 
-    for phrase, features in Parallel(n_jobs=workers)(delayed(_read_vector)(f) for f in files):
-        d[phrase] = features
+    unigrams = Vectors.from_tsv(unigrams)
 
-    logging.info('Successfully read %d APT vectors, converting to DiscoUtils data structure', len(d))
-    composed_vec = Vectors(d)
+    for i, chunk in enumerate(grouper(chunk_size, files)):
+        logging.info('Starting SVD on chunk %d', i)
+        for phrase, features in Parallel(n_jobs=workers)(delayed(_read_vector)(f) for f in chunk if f):
+            d[phrase] = features
 
-    do_svd(unigrams, output, reduce_to=[100], desired_counts_per_feature_type=None,
-           apply_to=composed_vec, write=3, use_hdf=True)
+        composed_vec = Vectors(d)
+        do_svd(unigrams, '%s-chunk%d' % (output, i),
+               reduce_to=[100], desired_counts_per_feature_type=None,
+               apply_to=composed_vec, write=2, use_hdf=True)
 
 
 if __name__ == '__main__':
@@ -126,6 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('--composed', required=True, help='Composed vector directory, as output by APT')
     parser.add_argument('--output', required=True, help='Name of output file. ')
     parser.add_argument('--workers', default=4, type=int, help='Worker process count, default=4')
+    parser.add_argument('--chunk-size', default=10000, type=int, help='Number of composed vectors to read at a time')
 
     args = parser.parse_args()
-    merge_vectors(args.composed, args.unigrams, args.output, workers=args.workers)
+    merge_vectors(args.composed, args.unigrams, args.output, workers=args.workers, chunk_size=args.chunk_size)

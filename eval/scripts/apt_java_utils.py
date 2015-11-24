@@ -7,7 +7,6 @@ import logging
 import os
 
 from joblib import Parallel
-
 from joblib import delayed
 
 from discoutils.tokens import DocumentFeature
@@ -114,22 +113,29 @@ def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
     logging.info('Found %d composed phrase files', len(files))
 
     unigrams = Vectors.from_tsv(unigrams)
+    cols = set(unigrams.columns)
+    # this particular dataset uses spaces instead of underscores. State this to avoid parsing issues
+    DocumentFeature.ngram_separator = ' '
 
     for i, chunk in enumerate(grouper(chunk_size, files)):
         logging.info('Starting SVD on chunk %d', i)
         for phrase, features in Parallel(n_jobs=workers)(delayed(_read_vector)(f) for f in chunk if f):
-            d[phrase] = features
+            if features:
+                d[phrase] = features
 
-        composed_vec = Vectors(d)
+        logging.info('Found %d non-empty composed vectors in this chunk', len(d))
+        if not d:
+            continue
+        composed_vec = Vectors(d, column_filter=lambda foo: foo in cols)
         do_svd(unigrams, '%s-chunk%d' % (output, i),
                reduce_to=[100], desired_counts_per_feature_type=None,
                apply_to=composed_vec, write=2, use_hdf=True)
+        del composed_vec
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s\t%(module)s.%(funcName)s (line %(lineno)d)\t%(levelname)s : %(message)s",
-                        datefmt='%m-%d %H:%M')
+                        format="%(asctime)s\t%(module)s.%(funcName)s (line %(lineno)d)\t%(levelname)s : %(message)s")
     # format_phrases()
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -137,7 +143,8 @@ if __name__ == '__main__':
     parser.add_argument('--composed', required=True, help='Composed vector directory, as output by APT')
     parser.add_argument('--output', required=True, help='Name of output file. ')
     parser.add_argument('--workers', default=4, type=int, help='Worker process count, default=4')
-    parser.add_argument('--chunk-size', default=10000, type=int, help='Number of composed vectors to read at a time')
+    parser.add_argument('--chunk-size', default=1000, type=int, help='Number of composed vectors to read at a time')
 
     args = parser.parse_args()
+    logging.info('Parameters are %r', args)
     merge_vectors(args.composed, args.unigrams, args.output, workers=args.workers, chunk_size=args.chunk_size)

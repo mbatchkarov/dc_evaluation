@@ -108,14 +108,17 @@ def _read_vector(vector_file):
 
 
 def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
+    # this particular dataset uses spaces instead of underscores. State this to avoid parsing issues
+    DocumentFeature.ngram_separator = ' '
+
     d = {}
     files = glob(os.path.join(composed_dir, '*apt.vec.gz'))
     logging.info('Found %d composed phrase files', len(files))
 
-    unigrams = Vectors.from_tsv(unigrams)
+    # ignore stuff that isn't unigrams, it will cause problems later
+    unigrams = Vectors.from_tsv(unigrams, row_filter=lambda x, y: y.type == '1-GRAM')
+    logging.info('Found %d unigram vectors', len(unigrams))
     cols = set(unigrams.columns)
-    # this particular dataset uses spaces instead of underscores. State this to avoid parsing issues
-    DocumentFeature.ngram_separator = ' '
 
     for i, chunk in enumerate(grouper(chunk_size, files)):
         logging.info('Starting SVD on chunk %d', i)

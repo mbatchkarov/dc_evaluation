@@ -116,7 +116,6 @@ def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
     DocumentFeature.ngram_separator = ' '
     DIMS = 100  # SVD dimensionality
 
-    d = {}
     files = glob(os.path.join(composed_dir, '*apt.vec.gz'))
     logging.info('Found %d composed phrase files', len(files))
 
@@ -125,6 +124,7 @@ def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
     logging.info('Found %d unigram vectors', len(unigrams))
 
     mat, cols, rows = unigrams.to_sparse_matrix()
+    unigrams.v.vocabulary_ = {x: i for i, x in enumerate(list(cols))}
     cols = set(cols)
     svd = TruncatedSVD(DIMS, random_state=0)
     logging.info('Reducing dimensionality of matrix of shape %r...', mat.shape)
@@ -140,6 +140,7 @@ def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
     del mat
 
     for i, chunk in enumerate(grouper(chunk_size, files)):
+        d = {}
         logging.info('Reading composed vectors, chunk %d...', i)
         for phrase, features in Parallel(n_jobs=workers)(delayed(_read_vector)(f) for f in chunk if f):
             if features:
@@ -152,7 +153,6 @@ def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
         composed_vec = Vectors(d, column_filter=lambda foo: foo in cols)
         # vectorize second matrix with the vocabulary (columns) of the first thesaurus to ensure shapes match
         # "project" composed matrix into space of unigram thesaurus
-        unigrams.v.vocabulary_ = {x: i for i, x in enumerate(list(cols))}
         extra_matrix = unigrams.v.transform([dict(fv) for fv in composed_vec.values()])
         assert extra_matrix.shape == (len(composed_vec), len(cols))
         logging.info('Composed matrix is of shape %r before SVD', extra_matrix.shape)

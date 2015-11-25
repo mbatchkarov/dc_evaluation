@@ -5,14 +5,18 @@ import gzip
 from itertools import zip_longest
 import logging
 import os
+import time
 
 from joblib import Parallel
+
 from joblib import delayed
+
+from sklearn.decomposition import TruncatedSVD
 
 from discoutils.tokens import DocumentFeature
 
 from discoutils.collections_utils import walk_nonoverlapping_pairs
-from discoutils.reduce_dimensionality import do_svd
+from discoutils.io_utils import write_vectors_to_hdf
 from discoutils.thesaurus_loader import Vectors
 
 __author__ = 'mmb28'
@@ -110,6 +114,7 @@ def _read_vector(vector_file):
 def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
     # this particular dataset uses spaces instead of underscores. State this to avoid parsing issues
     DocumentFeature.ngram_separator = ' '
+    DIMS = 100  # SVD dimensionality
 
     d = {}
     files = glob(os.path.join(composed_dir, '*apt.vec.gz'))
@@ -118,21 +123,45 @@ def merge_vectors(composed_dir, unigrams, output, workers=4, chunk_size=10000):
     # ignore stuff that isn't unigrams, it will cause problems later
     unigrams = Vectors.from_tsv(unigrams, row_filter=lambda x, y: y.type == '1-GRAM')
     logging.info('Found %d unigram vectors', len(unigrams))
-    cols = set(unigrams.columns)
+
+    mat, cols, rows = unigrams.to_sparse_matrix()
+    cols = set(cols)
+    svd = TruncatedSVD(DIMS, random_state=0)
+    logging.info('Reducing dimensionality of matrix of shape %r...', mat.shape)
+    start = time.time()
+    reduced_mat = svd.fit_transform(mat)
+    logging.info('Reduced using {} from shape {} to shape {} in {} seconds'.format(svd,
+                                                                                   mat.shape,
+                                                                                   reduced_mat.shape,
+                                                                                   time.time() - start))
+    write_vectors_to_hdf(reduced_mat, rows,
+                         ['SVD:feat{0:03d}'.format(i) for i in range(reduced_mat.shape[1])],
+                         '%s-unigrams-SVD%d' % (output, DIMS))
+    del mat
 
     for i, chunk in enumerate(grouper(chunk_size, files)):
-        logging.info('Starting SVD on chunk %d', i)
+        logging.info('Reading composed vectors, chunk %d...', i)
         for phrase, features in Parallel(n_jobs=workers)(delayed(_read_vector)(f) for f in chunk if f):
             if features:
                 d[phrase] = features
 
-        logging.info('Found %d non-empty composed vectors in this chunk', len(d))
+        logging.info('Found %d non-empty composed vectors in this chunk, running SVD now...', len(d))
         if not d:
             continue
+
         composed_vec = Vectors(d, column_filter=lambda foo: foo in cols)
-        do_svd(unigrams, '%s-chunk%d' % (output, i),
-               reduce_to=[100], desired_counts_per_feature_type=None,
-               apply_to=composed_vec, write=2, use_hdf=True)
+        # vectorize second matrix with the vocabulary (columns) of the first thesaurus to ensure shapes match
+        # "project" composed matrix into space of unigram thesaurus
+        unigrams.v.vocabulary_ = {x: i for i, x in enumerate(list(cols))}
+        extra_matrix = unigrams.v.transform([dict(fv) for fv in composed_vec.values()])
+        assert extra_matrix.shape == (len(composed_vec), len(cols))
+        logging.info('Composed matrix is of shape %r before SVD', extra_matrix.shape)
+
+        extra_matrix = svd.transform(extra_matrix)
+        write_vectors_to_hdf(extra_matrix,
+                             list(composed_vec.keys()),
+                             ['SVD:feat{0:03d}'.format(i) for i in range(extra_matrix.shape[1])],
+                             '%s-phrases-chunk%d-SVD%d' % (output, i, DIMS))
         del composed_vec
 
 

@@ -1,14 +1,23 @@
 # Evaluation via document classification
+[![Build Status](https://travis-ci.org/mbatchkarov/dc_evaluation.svg?branch=master)](https://travis-ci.org/mbatchkarov/dc_evaluation)
+[![Coverage Status](https://coveralls.io/repos/mbatchkarov/dc_evaluation/badge.svg?branch=master&service=github)](https://coveralls.io/github/mbatchkarov/dc_evaluation?branch=master)
 
+## Prerequisites
+	
+ - Python 3.2+ (legacy Python not supported)
+ - standard Python scientific stack (`numpy`, `scipy`, `scikit-learn`, etc)
+ - our [utility library](https://github.com/mbatchkarov/DiscoUtils)
+ - Stanford CoreNLP (tested with version `3.5.2` from 2015-04-20)
+ - sample corpus of labelled documents located at `data/web`
+ - pre-computed vectors for words and phrases of interest. This distribution includes randomly generated vectors, stored at `data/random_vectors.h5`
 
 ## Preparing labelled data
 
 The following steps are needed to prepared a labelled corpus for use in the system:
 
 
-
-### Convert labelled data to mallet format
-Directory structure of the labelled data
+### Convert labelled data to format
+Your labelled corpora must follow the directory structure of the provided example:
 ```
 web ------------------------> top-level container
 ├── de --------------------->  class 1
@@ -21,7 +30,7 @@ web ------------------------> top-level container
 
 
 ### Process with Stanford pipeline
-Process with Stanford CoreNLP (you will likely have to: to increase the maximum amount of memory available to the JVM):
+Process each labelled corpus with Stanford CoreNLP (you will likely have to: to increase the maximum amount of memory available to the JVM):
 
 ```
 cd DiscoUtils
@@ -29,9 +38,9 @@ cd ~/projects/DiscoUtils
 python discoutils/stanford_utils.py --data ../dc_evaluation/data/web --stanford ~/Downloads/stanford-corenlp-full-2015-04-20
 ```
 
-You can control what processing is done by CoreNLP. Find the line that says `tokenize,ssplit,pos,lemma,parse,ner` and add/delete as required. Note NER is very slow.
+You can control what processing is done by CoreNLP. Find the line that says `tokenize,ssplit,pos,lemma,parse,ner` and add/delete as required. Note NER is optional and very slow.
 
-For our example data set, this produces a `web-tagged` directory, whose structure matches that of `web`. Files are CoNLL-formatted:
+For our example data set, this produces a `web-tagged` directory, whose structure matches that of `web`. Files are CoNLL-formatted, e.g.:
 
 ```
 1	He	he	PRP	O	2	nsubj
@@ -68,10 +77,9 @@ This extracts all features (words and phrases) of interest. You can select what 
 
 ```
 cd ~/projects/dc_evaluation
-python eval/scripts/compress_labelled_data.py --conf conf/exp0/exp0.conf --all
+python eval/scripts/compress_labelled_data.py --conf conf/exp0/exp0.conf --all --write-features
 ```
-
-PyPy might speed this part significantly. The output is (a compressed version of) the following:
+A configuration file containing tokenisation settings is required. This is detailed below. The output is (a compressed version of) the following:
 
 ```
 ["de", ["war/N", "zu/N"]]
@@ -80,16 +88,90 @@ PyPy might speed this part significantly. The output is (a compressed version of
 
 One document per line, the first item in the list being the label, and the second item is a list of document features.
 
-### Extract phrases to compose
+`compress_labelled_data.py` takes an additional boolean flag, `--write-features`, which is disabled by default. If true, a set of additional files will be written to `./features_in_labelled` for each labelled corpus. These contain a list of all extracted document features, a list of all noun phrase modifiers, a list of all verbs that appear in verb phrases, etc. I found these convenient during my PhD, as they make it easy to invoke compositional algorithms in batch. You may have no use for these files.
 
 ## Building word and phrase vectors
+Use your preferred distributional method to build vectors for unigrams and phrases contained in all labelled corpora. These were extracted in the previous step.
+
+During my PhD I used [this code](https://github.com/mbatchkarov/vector_builder) to build word and phrase vectors. See examples in that repository.
+
+## Cluster distributed representations [optional]
+
+```
+python eval/scripts/kmeans_disco.py --input data/random_vectors.h5 --output data/random_vectors.h5.kmeans.k2 --num-clusters 5
+```
 
 ## Evaluating composed vectors
 
+For the purposes of this example suppose we have processed a labelled classification corpus as described above and stored it to `data/web-tagged.gz`. We have also generated a random vectors for each document feature in the labelled corpus, and that they are stored in `data/random_vectors.h5`. We need a to write a configuration file to control the evaluation process. An example file is provided at `data/exp0/exp0.conf`. The file `conf/confrc` specifies the format of the configuration files and describes the meaning of each parameter. Configuration files are checked against the specification in `confrc` at the start of each experiments. You are ready to run an evaluation:
+
+```
+python eval/evaluate.py conf/exp0/exp0.conf
+```
+
+Results will appear in `conf/exp0.output`:
+
+ - **exp0.conf**: copy of configuration file used to produce this output
+ - **log.txt**: detailed experiment log
+ - **exp0.scores.csv**: scores for each classifier for each cross-validation fold
+ - **gold-cv0.csv**: gold-standard output for testing section of the labelled corpus
+ - **predictions-*-cv0.csv**: predictions of each classifier for testing section of the labelled corpus
+
+### Common types of experiments
+
+- Non-distributional baseline
+ 
+	 - decode_token_handler = eval.pipeline.feature_handlers.BaseFeatureHandler
+	 - must_be_in_thesaurus = False
+
+- Standard feature expansion
+ 
+	 - decode_token_handler = eval.pipeline.feature_handlers.SignifierSignifiedFeatureHandler
+	 - must_be_in_thesaurus = False
+
+- Extreme feature expansion (EFE)
+ 
+	 - decode_token_handler = eval.pipeline.bov_feature_handlers.SignifiedOnlyFeatureHandler
+	 - must_be_in_thesaurus = False
+	 - neighbours_file = data/random_vectors.h5 (something)
+
+- Non-compositional EFE
+
+	 - decode_token_handler = eval.pipeline.feature_handlers.SignifiedOnlyFeatureHandler
+	 - must_be_in_thesaurus = False
+	 - neighbours_file = data/random_vectors.h5 # some vectors
+	 - feature_extraction > train_time_opts > extract_unigram_features = J, N, V
+	 - feature_extraction > train_time_opts > extract_phrase_features = ,
+	 - feature_extraction > decode_time_opts > extract_unigram_features = J, N, V
+	 - feature_extraction > decode_time_opts > extract_phrase_features = ,
+
+- Using clustered representation
+ 	 - decode_token_handler = eval.pipeline.multivectors.KmeansVectorizer
+	 - must_be_in_thesaurus = False
+	 - neighbours_file = , # empty list
+	 - clusters_file = asdf.kmeans # some file produced by clustering step above
+
+ - Remove PoS tag from entries ("cat/N_food/N" -> "cat_food")
+ 	- feature_extraction > remove_pos = True
+ 	- the labelled data is still PoS tagged, so you can filter features by type (e.g. AN, J, N). Nearest-neighbour queries are done without a PoS tag, so it is OK if your unlabelled is not tagged.
+
+
+### Common configuration pitfalls:
+ 
+ - features extracted and train time do not overlap with (or are not distributionally comparable to) those at test time, e.g. nouns only at train time and verbs only at test time
+ - feature selection too aggressive. This can be because `min_test_features` is too high, or because the distributional model (`neighbours_file`) does not contain vector for most of the document features. 
+ - mismatch between preprocessing of labelled and unlabelled data, e.g. distributional vectors say `cat/NNS` and labelled documents say `cat/N`. Settings to watch are `use_pos`, `coarse_pos` and `lowercase`.
+
+# Code
+
+ Run unit tests with
+
+ ```
+ cd ~/projects/dc_evaluation
+ py.test tests # OR python setup.py test OR runtests.py
+ ```
+
 # TODO
- - auto-remove PostVectDump files, they are annoying
- - document all entry points
- - move tests to sane packages
+ - move tests to sane packages and reorganise 
  - separate phrase extraction from a dep tree to a new module
- - all entry points should take only cmd line args- no need to tweak source!
- - ultimately the repo should contain some labelled and unlabelled data that the code can be run on
+ - check all entry points take only cmd line args- no need to tweak source! 

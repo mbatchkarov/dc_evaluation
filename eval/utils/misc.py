@@ -1,11 +1,11 @@
-import inspect
 import os
 import errno
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
-from eval.metrics import macroavg_prec, macroavg_f1, macroavg_rec, microavg_prec, microavg_rec, microavg_f1
-from eval.utils.reflection_utils import get_named_object
 import logging
+
+from sklearn.metrics import accuracy_score
 import numpy as np
+
+from eval.utils.metrics import macroavg_prec, macroavg_f1, macroavg_rec, microavg_prec, microavg_rec, microavg_f1
 
 
 def unit(x):
@@ -102,18 +102,3 @@ def update_dict_according_to_mask(v, mask):
     new_indices = {old_index: new_index for new_index, old_index in enumerate(sorted(v.values()))}
     # update indices in vocabulary
     return {feature: new_indices[index] for feature, index in v.items()}
-
-
-def force_symlink(existing_file, link_name):
-    """
-    Created a symlink. If `link_name` exists it is deleted first. Take care!
-    :raise e:
-    """
-    try:
-        os.symlink(existing_file, link_name)
-    except OSError as e:
-        if e.errno == errno.EEXIST:
-            os.remove(link_name)
-            os.symlink(existing_file, link_name)
-        else:
-            raise e

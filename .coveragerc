@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = eval
+include = eval/*
+omit =
+    tests/*
+    */setup.py

@@ -1,35 +1,30 @@
-name=string() # used to identify output files
-debug=boolean(default=False) #if true, pipelines will be pickled and feature vectors will be dumped as csv
+name=string(default='UNNAMED') # used to identify output files
 shuffle_targets=boolean(default=False) # randomly change the labels of all documents, sanity check
+debug_level=float(default=0)) # How much information to record. 0 = result only, 1 = write information about replacements made at decode time to ./statistics, 2 = pipelines will be pickled and feature vectors will be dumped as csv
 
-training_data=string(default='')
-test_data=string(default='')
+training_data=string(default='') # training data
+test_data=string(default='') # optional test data. If none is provided crossvalidation can be done. Providing this is useful for unit testing or when using a corpus where the train-test split is pre-defined like Reuters-21578
 
-min_test_features = float() # minimum number of features in a document at train/decode time. Documents failing this test are removed from the data set.
-min_train_features = float() # these need to be a float when using similarity scores as term frequency 
+min_test_features = float(default=0) # minimum number of features in a document at train/decode time. Documents failing this test are removed from the data set.
+min_train_features = float(default=0) # these need to be a float when using similarity scores as term frequency 
 
-[feature_extraction]
-    run=boolean(default=True)
-    vectorizer=string(default='thesisgenerator.plugins.bov.ThesaurusVectorizer') # class of vectorizer
-    min_df=integer(default=0)
-    use_tfidf=boolean(default=False)
-    
-    remove_features_with_NER=boolean(default=False) # whether to remove document features that contain a token with NER tag  ORG, PERS, LOC- these aren't composable
-
+[vectorizer] # how are features converted to a vector?
+	run=boolean(default=True)
+	class=string(default='eval.pipeline.bov.ThesaurusVectorizer') # class of vectorizer
     # extra options required by the Bag-of-Vectors project Vectorizer
+    k=integer(min=0,default=3) # how many neighbours per entry to read. This is multiplied by 8 to account for lexical overlap
+	sim_compressor=string(default='eval.utils.misc.unit') # how to scale the sim between two features in a thesaurus when replacing
+	train_token_handler=string(default='eval.pipeline.feature_handlers.BaseFeatureHandler') # specified which class to handle the convertion of tokens/ngrams to features
+	decode_token_handler=string(default='eval.pipeline.feature_handlers.BaseFeatureHandler')
+    min_df=integer(default=0)
+    man_df=integer(default=999999999999)
     random_neighbour_thesaurus=boolean(default=False) # if true, k random in-vocabulary neighbours will be returned at decode time
-    k=integer(min=0) # how many neighbours per entry to read
-    lemmatize=boolean(default=True) 
-    use_pos=boolean(default=True) # big cat -> big/JJ cat/NNS
-	coarse_pos=boolean(default=True) 
-	normalise_entities=boolean(default=False) # all named entities -> PERSON/LOCATION/MISC
-
-	record_stats=boolean(default=False)
-	sim_compressor=string(default='thesisgenerator.utils.misc.unit') # how to scale the sim between two features in a thesaurus when replacing
-
-	train_token_handler=string(default='thesisgenerator.plugins.bov_feature_handlers.BaseFeatureHandler') # specified which class to handle the convertion of tokens/ngrams to features, signifier/signified
-	decode_token_handler=string(default='thesisgenerator.plugins.bov_feature_handlers.BaseFeatureHandler')
-    
+    		
+[feature_extraction] # how are words converted to features?
+    run=boolean(default=True)    
+    remove_features_with_NER=boolean(default=False) # whether to remove document features that contain a token with NER tag  ORG, PERS, LOC- these aren't composable
+    remove_pos=boolean(default=False) # useful when the distributional model has entries w/o a PoS tag
+	
     [[train_time_opts]] # things to do at train time
         extract_unigram_features=list(default=None) # PoS tags of unigram features to be extracted. If None, no unigram feats are used
         extract_phrase_features=list(default=None) # type of phrasal features to be used, e.g. AN, NN, VO, SVO
@@ -39,34 +34,40 @@ min_train_features = float() # these need to be a float when using similarity sc
 
 [tokenizer]
 	lowercase=boolean(default=True)
-    keep_only_IT=boolean(default=False)
     remove_stopwords=boolean(default=False)
 	remove_short_words=boolean(default=False)
-	remove_long_words=boolean(default=False)
+	remove_long_words=boolean(default=False) # probably noise anyway.
+	use_pos=boolean(default=True) # if PoS tags ara available, include them in each token, e.g. "big/JJ cat/NNS"
+	lemmatize=boolean(default=True) 
+    coarse_pos=boolean(default=True) # big/JJ -> big/J
+	normalise_entities=boolean(default=False) # all named entities -> PERSON/LOCATION/MISC
 
 [vector_sources] # this section will eventually replace all thesaurus-related options. There will not be a pre-computed sim matrix, just vectors in a suitable datastructure that allows fast online sim calculation
 	neighbours_file = list(default=[]) # path to either a Byblo neighbours.strings file or an events.filtered.string file
+	is_thesaurus = boolean(default=False) # if true, these aren't vector, but a precomputed thesaurus
+	include_self = boolean(default=False) # if the vector source is a thesaurus, should we include self as the nearest neighbour of an entry?
     entries_of = string(default='') # path to a thesaurus/vector set. All entries of `neighbours_file` not contained in this file are removed. This is used to compensate for some model's higher coverage.
 	sim_threshold=float(default=0.0) # exclude neighbours from thesaurus if sim is less than threshold
 	allow_lexical_overlap = boolean(default=True) # when a thesaurus is loaded from disk and this is set to true, neighbours that overlap lexically with the base entry will be removed. See unit test for spec.
     max_neighbours = integer(default=99999999999999) # how many neighbours of each entry to keep in memory
-    use_shelf = boolean(default=False) # whether to use the shelve module to persist thesauri/vectors to disk in an attempt to reduce memory usage
     neighbour_strategy = option('linear', 'skipping', default='linear') # how to find nearest neighbours. Linear means just the usual way- sorting all neighbours by sim ans yielding from this list. Skipping means the i+1-th returned neighbour is the top neighbour of the i-th neighbour.
     noise=float(default=0) # proportion of mean value of non-zero entries in vector to add as noise
 	clusters_file = string(default='')
+	dummy_thesaurus=boolean(default=False) # if true, a dummy thesaurus that always returns "b/N" is used. For unit testing only.
 		
 [crossvalidation]
 	run=boolean(default=True)
-	type = option('kfold', 'skfold', 'loo', 'bootstrap', 'oracle', 'subsampled_test_set', default='skfold') # subsampled_test_set only used in unit tests
-	k=integer(min=1,max=100)
+	type = option('kfold', 'skfold', 'oracle', 'subsampled_test_set', default='skfold') # cross-validation kind, e.g. stratified kfold; "oracle" means "use training data for testing", "test_set" means "test on the predefined test set, stored in a separate file", subsampled_test_set only used in unit tests
+	k=integer(min=1,max=100,default=5) # number of folds
     random_state=integer(default=0)
+    break_after_first=boolean(default=False)# whether to stop after first fold. This is how bootstrap confidence intervals are implemented.
 
 [feature_selection]
     run=boolean(default=True)
-    method=string(default='thesisgenerator.composers.feature_selectors.VectorBackedSelectKBest')
+    method=string(default='eval.pipeline.feature_selectors.VectorBackedSelectKBest')
     scoring_function=string(default='') # if nothing is passed in, thesisgenereator will use chi2
-    must_be_in_thesaurus=boolean(default=False)
-    k=integer(default=99999999999999) # if doing feature selection by chi-squared, how many features to keep
+    must_be_in_thesaurus=boolean(default=False)  # whether to remove document features without a distributional representation
+    k=integer(default=99999999999999) # if doing feature selection by chi-squared, how many features to keep. . disabled by default
     min_log_odds_score=float(default=0) # features with a log odds score outside the range [-min_log_odds_score, min_log_odds_score] will be removed. If a non-positive value is provided here, log-odds filtering will not be used.
 
 [classifiers]
@@ -90,46 +91,12 @@ min_train_features = float() # these need to be a float when using similarity sc
     	run=boolean(default=False)
 		C=float(default=1)
 		
-	[[thesisgenerator.classifiers.MostCommonLabelClassifier]]
+	[[eval.classifiers.MostCommonLabelClassifier]]
 	    run=boolean(default=False)
 	    
-    [[thesisgenerator.classifiers.MultinomialNBWithBinaryFeatures]]
+    [[eval.classifiers.MultinomialNBWithBinaryFeatures]]
 	    run=boolean(default=False)
 		alpha=float(default=0.1)
 		threshold=float(default=0.0)
-
-[evaluation]
-    [[sklearn.metrics.precision_score]]
-        run=boolean(default=False)
-		average=option('micro', 'macro', 'weighted', default=None)
-
-	[[sklearn.metrics.recall_score]]
-		run=boolean(default=False)
-		average=option('micro', 'macro', 'weighted', default=None)
-
-	[[sklearn.metrics.f1_score]]
-		run=boolean(default=False)
-        average=option('micro', 'macro', 'weighted', default=None)
-
-	[[thesisgenerator.metrics.macroavg_prec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.macroavg_rec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.macroavg_f1]]
-    	run=boolean(default=False)
-
-    [[thesisgenerator.metrics.microavg_prec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.microavg_rec]]
-    	run=boolean(default=False)
-
-	[[thesisgenerator.metrics.microavg_f1]]
-    	run=boolean(default=False)
-
-    [[sklearn.metrics.accuracy_score]]
-        run=boolean(default=False)
 
 
